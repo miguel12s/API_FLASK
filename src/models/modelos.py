@@ -1,12 +1,47 @@
 from databases.conexion import getConecction
-from models.estudiante import Estudiante
+from models.user import User
 mybd=getConecction()
 cursor=mybd.cursor()
-def insertarUsuario(estudiante:Estudiante):
-       print(estudiante)
-       cursor.execute(f"INSERT INTO estudiante(nombre,apellido) VALUES ('{estudiante['nombre']}','{estudiante['apellido']}')")
-       mybd.commit
-        
+def insertarEstudiante(estudiante):
+       cursor.execute(f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo[0]}')")
+       mybd.commit()
+       
+
+def insertarUsuario(user):
+      
+       cursor.execute(f"INSERT INTO usuarios(id_rol, id_estado, correo,contraseña) VALUES ('{1}','{1}','{user.correo}','{user.contraseña}')")
+       mybd.commit()
+       id_usuario = cursor.lastrowid
+       return id_usuario
+
+def searchUserForRol(passwordHashed,data):
+       password=User.checkPassword(passwordHashed[0],data['contraseña'])
+       print('coincide',password)
+       if(password):
+              cursor.execute(f"select id_rol,id_usuario from usuarios where correo='{data['correo']}'and contraseña='{passwordHashed[0]}'")
+              datos=cursor.fetchall()
+
+              print('los datos son',datos)
+              primer_fila = datos[0]
+              id_rol = primer_fila[0]
+              id_usuario = primer_fila[1]
+              
+              return id_usuario,id_rol
+       else:
+              print('el usuario no ha sido encontrado')
+       return False,False
+
+# def selectDataForIdUser(id_user):
+#        cursor.execute(f"select * from estudiantes where id_usuario={id_user}")
+#        data=cursor.fetchall()
+#        return data
+
+def getPasswordHash(correo):
+       sql=f"select contraseña from usuarios where correo='{correo}'"
+       cursor.execute(sql)
+       password= cursor.fetchone()
+       print('la contraseña es',password)
+       return password
         
        
         

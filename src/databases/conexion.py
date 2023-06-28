@@ -11,7 +11,7 @@ def getConecction():
             host='localhost',
             user='root',
             password='',
-            database='prueba'
+            database='tutobq'
         )
         return bd
     except Error as e:
