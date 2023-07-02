@@ -8,15 +8,14 @@ def insertarEstudiante(estudiante):
        
 
 def insertarUsuario(user):
-      
-       cursor.execute(f"INSERT INTO usuarios(id_rol, id_estado, correo,contraseña) VALUES ('{1}','{1}','{user.correo}','{user.contraseña}')")
+       cursor.execute("INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo,  contraseña) VALUES (%s, %s, %s, %s, %s)", (1, 1, 1, user.correo, user.contraseña)) 
        mybd.commit()
        id_usuario = cursor.lastrowid
        return id_usuario
 
 def searchUserForRol(passwordHashed,data):
        password=User.checkPassword(passwordHashed[0],data['contraseña'])
-       print('coincide',password)
+       
        if(password):
               cursor.execute(f"select id_rol,id_usuario from usuarios where correo='{data['correo']}'and contraseña='{passwordHashed[0]}'")
               datos=cursor.fetchall()
@@ -25,7 +24,6 @@ def searchUserForRol(passwordHashed,data):
               primer_fila = datos[0]
               id_rol = primer_fila[0]
               id_usuario = primer_fila[1]
-              
               return id_usuario,id_rol
        else:
               print('el usuario no ha sido encontrado')

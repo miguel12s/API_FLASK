@@ -3,6 +3,7 @@ from werkzeug.security import check_password_hash,generate_password_hash
 class User:
     id_rol:int
     id_estado:int
+    
     correo:str
     contraseña:str
 
