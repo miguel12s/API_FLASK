@@ -15,7 +15,6 @@ def searchUserForRol(passwordHashed,data):
               cursor.execute(f"select id_rol,id_usuario from usuarios where correo='{data['correo']}'and contraseña='{passwordHashed[0]}'")
               datos=cursor.fetchall()
 
-              print('los datos son',datos)
               primer_fila = datos[0]
               id_rol = primer_fila[0]
               id_usuario = primer_fila[1]

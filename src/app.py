@@ -39,7 +39,7 @@ def registro():
             return jsonify(response, status, data)
         usuario = User(None,'1', '1', data['correo'], data['contraseña'])
         id = User.save(usuario)
-        estudiante = Estudiante(id, data['nombres'], data['apellidos'], data['tipoDocumento'],
+        estudiante = Estudiante(id, data['nombre'], data['apellido'], data['tipoDocumento'],
                                 data['numeroDocumento'], data['numeroTelefono'], data['programa'], data['facultad'], data['correo'])
         Estudiante.save(estudiante)
         status = 200
@@ -66,13 +66,12 @@ def login():
     
     if(passwordHashed!=None):
          id_usuario, id_rol = searchUserForRol(passwordHashed,data)
-         print(id_usuario,id_rol)
          if(id_usuario!=False):
              if (id_rol != None):
-                
+                 print("el correo es",user.correo)
                  login_user(user)
                  token = Security.generateToken(id_usuario)
-                 message=({"success": True, token: token,"rol":id_rol})
+                 message=({"success": True, 'token': token,"rol":id_rol,"usuario":id_usuario})
              else:
                  message=({"success":False})
          else:
@@ -94,28 +93,20 @@ def logout():
 @login_required
 def protected():
     return jsonify({'message':"ruta protegida"})
-# @app.route('/login', methods=['post'])
-# def login():
-#     id_usuario: int
-#     id_rol: int
-#     data = request.json
-#     print(data)
-#     message={}
-#     if not data:
-#         return jsonify('los datos estan incorrectos')
-#     passwordHashed=getPasswordHash(data['correo'])
-#     if(passwordHashed!=None):
-#         id_usuario, id_rol = searchUserForRol(passwordHashed,data)
-#         if(id_usuario!=False):
-#             if (id_rol != None):
-#                 token = Security.generateToken(id_usuario)
-#                 message=({"success": True, token: token,"rol":id_rol})
-#             else:
-#                 message=({"success":False})
-#         else:
-#          message=({"success":False})
-#         return jsonify(message)
-#     else:
-#         return jsonify(message)
+
+
+@app.route('/perfil/<id>')
+
+
+def perfil(id):
+    print(id)
+  
+    estudiante=Estudiante.get(id)
+
+    
+    return jsonify(estudiante.serialize())
+    
+
+
 if __name__ == '__main__':
     app.run(debug=True)

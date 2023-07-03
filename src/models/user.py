@@ -33,14 +33,14 @@ class User(UserMixin):
     def checkPassword(self, passwordHashed, password):
         return check_password_hash(passwordHashed, password)
 
-    @staticmethod
+  
     def get_by_email(correo: str):
         sql = f"SELECT * FROM usuarios WHERE correo = '{correo}'"
         cursor.execute(sql)
         user_data = cursor.fetchone()
         print(user_data[0])
         if user_data:
-            return User(user_data[0], user_data[1], user_data[2], user_data[2], user_data[3])
+            return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4])
         else:
             return None
 
