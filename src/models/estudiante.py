@@ -1,3 +1,8 @@
+from databases.conexion import getConecction
+
+
+bd=getConecction()
+cursor=bd.cursor()
 class Estudiante:
     id:str
     nombre:str
@@ -19,5 +24,12 @@ class Estudiante:
         self.celular=celular
         self.facultad=facultad
         self.programa=programa
-        self.correo=correo,
-       
+        self.correo=correo
+
+    @classmethod
+    def save(self,estudiante):
+        sql=f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo}')"   
+        cursor.execute(sql)
+        bd.commit()
+
+    

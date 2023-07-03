@@ -7,11 +7,6 @@ def insertarEstudiante(estudiante):
        mybd.commit()
        
 
-def insertarUsuario(user):
-       cursor.execute("INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo,  contraseña) VALUES (%s, %s, %s, %s, %s)", (1, 1, 1, user.correo, user.contraseña)) 
-       mybd.commit()
-       id_usuario = cursor.lastrowid
-       return id_usuario
 
 def searchUserForRol(passwordHashed,data):
        password=User.checkPassword(passwordHashed[0],data['contraseña'])
@@ -35,6 +30,7 @@ def searchUserForRol(passwordHashed,data):
 #        return data
 
 def getPasswordHash(correo):
+       print(correo)
        sql=f"select contraseña from usuarios where correo='{correo}'"
        cursor.execute(sql)
        password= cursor.fetchone()
