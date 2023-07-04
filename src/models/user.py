@@ -33,6 +33,10 @@ class User(UserMixin):
     def checkPassword(self, passwordHashed, password):
         return check_password_hash(passwordHashed, password)
 
+    @classmethod
+
+    def generatePassword(self, password):
+        return generate_password_hash(password)
   
     def get_by_email(correo: str):
         sql = f"SELECT * FROM usuarios WHERE correo = '{correo}'"

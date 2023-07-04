@@ -3,7 +3,7 @@ from flask_cors import CORS
 from models.modelosSimples import getPrograms, getTipoDocumento
 from models.estudiante import Estudiante
 from models.user import User
-from models.modelos import getPasswordHash,searchUserForRol
+from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword
 from utils.Security import Security
 from flask_login import LoginManager,login_required,login_user,logout_user
 
@@ -53,7 +53,7 @@ def load_user(user_id):
   
     return User.get(user_id)
 
-@app.route('/login',methods=['post'])
+@app.route('/login',methods=['post','get'])
 def login():
     
 
@@ -102,11 +102,20 @@ def perfil(id):
     print(id)
   
     estudiante=Estudiante.get(id)
-
-    
     return jsonify(estudiante.serialize())
     
+@app.route('/cambiar-contraseña/<id>',methods=['post'])
 
 
+def cambiar_contraseña(id):
+    response=request.json
+    contraseña=response['contraseña'],
+    nuevaContraseña=response['nuevaContraseña']
+    hashedPassword=getPasswordForId(id)
+    if(User.checkPassword(hashedPassword,contraseña[0])):
+        updatePassword(id,User.generatePassword(nuevaContraseña))
+        
+        return jsonify({"message":"la contraseña ha sido cambiada"})              
+    return jsonify({"message":"la contraseña no ha sido cambiada"})
 if __name__ == '__main__':
     app.run(debug=True)

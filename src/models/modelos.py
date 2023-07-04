@@ -35,7 +35,24 @@ def getPasswordHash(correo):
        password= cursor.fetchone()
        print('la contraseña es',password)
        return password
-        
-       
+
+def getPasswordForId(id_usuario):
+       sql=f"select contraseña from usuarios where id_usuario='{id_usuario}'"
+       cursor.execute(sql)
+       password=cursor.fetchone()[0]
+       print(password)
+       return password    
+
+def updatePassword(id,password):
+       print('hash',password)
+       sql=f"update usuarios set contraseña='{password}' where id_usuario='{id}'"
+       cursor.execute(sql)
+       mybd.commit()
+
+def updatePasswordForStudents(id,password):
+       print('hash',password)
+       sql=f"update estudiantes set contraseña='{password}' where id_usuario='{id}'"
+       cursor.execute(sql)
+       mybd.commit()
         
     

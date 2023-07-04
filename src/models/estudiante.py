@@ -1,5 +1,5 @@
 from databases.conexion import getConecction
-
+from werkzeug.security import generate_password_hash
 
 bd=getConecction()
 cursor=bd.cursor()
@@ -49,3 +49,6 @@ class Estudiante:
             'programa':self.programa,
             'correo':self.correo,
         }
+ 
+
+    
