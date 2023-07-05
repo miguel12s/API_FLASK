@@ -1,18 +1,16 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request,session
 from flask_cors import CORS
 from models.modelosSimples import getPrograms, getTipoDocumento
 from models.estudiante import Estudiante
 from models.user import User
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword
+from models.docente import Docente
 from utils.Security import Security
-from flask_login import LoginManager,login_required,login_user,logout_user
 
 app = Flask(__name__)
-CORS(app, origins='http://localhost:4200')
+CORS(app, origins='http://localhost:4200',supports_credentials=True)
 
 app.secret_key="secret_key"
-login_manager=LoginManager()
-login_manager.init_app(app)
 
 
 @app.route('/programas')
@@ -48,12 +46,9 @@ def registro():
     except Exception as e:
         return jsonify({'message': "error"})
 
-@login_manager.user_loader
-def load_user(user_id):
-  
-    return User.get(user_id)
 
-@app.route('/login',methods=['post','get'])
+
+@app.route('/login',methods=['post'])
 def login():
     
 
@@ -62,14 +57,14 @@ def login():
         return jsonify({'message':"no hay datos en la request"})
      
     passwordHashed=getPasswordHash(data['correo'])
-    user = User.get_by_email(data['correo'])
     
     if(passwordHashed!=None):
          id_usuario, id_rol = searchUserForRol(passwordHashed,data)
          if(id_usuario!=False):
+             print(id_usuario)
              if (id_rol != None):
-                 print("el correo es",user.correo)
-                 login_user(user)
+                 session['id']=id_usuario
+                 print(session['id'],'hola')
                  token = Security.generateToken(id_usuario)
                  message=({"success": True, 'token': token,"rol":id_rol,"usuario":id_usuario})
              else:
@@ -82,40 +77,83 @@ def login():
 
 
 @app.route('/logout')
-@login_required
+
 def logout():
-    logout_user()
     return jsonify({'message': 'Cierre de sesión exitoso'})
 
 
 
 @app.route('/protected')
-@login_required
+
 def protected():
     return jsonify({'message':"ruta protegida"})
 
 
-@app.route('/perfil/<id>')
+@app.route('/perfil',methods=['get'])
 
+def perfil():
+    
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    
+    
+    estudiante=Estudiante.get(id_usuario)
+    return jsonify(estudiante.serialize())
 
-def perfil(id):
-    print(id)
-  
-    estudiante=Estudiante.get(id)
+@app.route('/perfil-docente',methods=['get'])
+
+def perfilDocente():
+    
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    
+    
+    estudiante=Docente.get(id_usuario)
     return jsonify(estudiante.serialize())
     
-@app.route('/cambiar-contraseña/<id>',methods=['post'])
+@app.route('/cambiar-contraseña',methods=['post'])
 
 
-def cambiar_contraseña(id):
+def cambiar_contraseña():
     response=request.json
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload.get('id_usuario')
     contraseña=response['contraseña'],
     nuevaContraseña=response['nuevaContraseña']
-    hashedPassword=getPasswordForId(id)
+    hashedPassword=getPasswordForId(id_usuario)
     if(User.checkPassword(hashedPassword,contraseña[0])):
-        updatePassword(id,User.generatePassword(nuevaContraseña))
+        newPassword=User.generatePassword(nuevaContraseña)
+        updatePassword(id_usuario,newPassword)
         
         return jsonify({"message":"la contraseña ha sido cambiada"})              
     return jsonify({"message":"la contraseña no ha sido cambiada"})
+
+
+@app.route('/agregar-docente',methods=['POST'])
+
+def agregarDocente():
+    
+        data: Docente = request.json
+        if not data:
+            response = {'message': 'no hay datos en la request'}
+            status = 400
+            return jsonify(response, status, data)
+        
+        usuario = User(None,'2', '1', data['correo'], data['contraseña'])
+        id = User.save(usuario)
+
+        docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
+                                data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'])
+        Docente.save(docente)
+        
+        status = 200
+        response = {'message': "solicitud procesada"}
+        return jsonify(response)
+    
+        return jsonify({'message': "error"})
+
 if __name__ == '__main__':
     app.run(debug=True)

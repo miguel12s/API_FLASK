@@ -9,7 +9,7 @@ cursor = bd.cursor()
 class User(UserMixin):
     id_rol: int
     id_estado: int
-
+    id:int
     correo: str
     contraseña: str
 
@@ -22,7 +22,7 @@ class User(UserMixin):
 
     @classmethod
     def save(self, usuario):
-        sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{1}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
+        sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{2}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
         cursor.execute(sql)
         bd.commit()
         id_usuario = cursor.lastrowid
@@ -47,14 +47,15 @@ class User(UserMixin):
             return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4])
         else:
             return None
-
+    
     def get_id(self):
         return str(self.id)
-
+    
     def get(user_id):
         sql = f"SELECT * FROM usuarios WHERE id_usuario = {user_id}"
         cursor.execute(sql)
         user_data = cursor.fetchone()
+        print(user_data)
         if user_data:
             return User(user_data[0], user_data[1], user_data[2], user_data[3], user_data[4])
         else:

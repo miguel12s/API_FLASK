@@ -49,10 +49,6 @@ def updatePassword(id,password):
        cursor.execute(sql)
        mybd.commit()
 
-def updatePasswordForStudents(id,password):
-       print('hash',password)
-       sql=f"update estudiantes set contraseña='{password}' where id_usuario='{id}'"
-       cursor.execute(sql)
-       mybd.commit()
+
         
     
