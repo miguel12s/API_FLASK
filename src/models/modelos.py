@@ -50,5 +50,7 @@ def updatePassword(id,password):
        mybd.commit()
 
 
+
+
         
     

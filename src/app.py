@@ -51,7 +51,7 @@ def registro():
 @app.route('/login',methods=['post'])
 def login():
     
-
+    message={}
     data=request.json
     if not data:
         return jsonify({'message':"no hay datos en la request"})
@@ -63,8 +63,7 @@ def login():
          if(id_usuario!=False):
              print(id_usuario)
              if (id_rol != None):
-                 session['id']=id_usuario
-                 print(session['id'],'hola')
+            
                  token = Security.generateToken(id_usuario)
                  message=({"success": True, 'token': token,"rol":id_rol,"usuario":id_usuario})
              else:
@@ -95,6 +94,7 @@ def perfil():
     
     headers=request.headers
     payload=Security.verify_token(headers)
+    print(payload)
     id_usuario=payload['id_usuario']
     
     
@@ -107,6 +107,7 @@ def perfilDocente():
     
     headers=request.headers
     payload=Security.verify_token(headers)
+    print(payload)
     id_usuario=payload['id_usuario']
     
     
@@ -153,7 +154,15 @@ def agregarDocente():
         response = {'message': "solicitud procesada"}
         return jsonify(response)
     
-        return jsonify({'message': "error"})
+
+
+
+
+
+
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True)
