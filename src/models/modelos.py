@@ -49,6 +49,11 @@ def updatePassword(id,password):
        cursor.execute(sql)
        mybd.commit()
 
+def saveFoto(img,id_user):
+       sql=f"update estudiantes set foto='{img}' where id_usuario='{id_user}'"
+       cursor.execute(sql)
+       mybd.commit()
+
 
 
 

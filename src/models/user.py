@@ -22,7 +22,7 @@ class User(UserMixin):
 
     @classmethod
     def save(self, usuario):
-        sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{2}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
+        sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{usuario.id_rol}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
         cursor.execute(sql)
         bd.commit()
         id_usuario = cursor.lastrowid

@@ -1,16 +1,64 @@
-from flask import Flask, jsonify, request,session
+from flask import Flask, jsonify, request,make_response,send_from_directory
 from flask_cors import CORS
+import jwt
 from models.modelosSimples import getPrograms, getTipoDocumento
 from models.estudiante import Estudiante
 from models.user import User
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword
 from models.docente import Docente
 from utils.Security import Security
+from werkzeug.utils import secure_filename
+import os
+
 
 app = Flask(__name__)
-CORS(app, origins='http://localhost:4200',supports_credentials=True)
 
+UPLOAD_FOLDER ='src/static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+
+CORS(app, origins='http://localhost:4200',supports_credentials=True)
 app.secret_key="secret_key"
+
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+
+def allowed_file(filename):
+    print("hola")
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()
+
+@app.route("/upload",methods=["POST"])
+def upload():
+    verify = request.headers
+    payload = Security.verify_token(verify)
+    print(payload)
+    id_usuario = payload['id_usuario']
+
+    if 'file' not in request.files:
+        return jsonify({'error': 'No se encontró el archivo'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Nombre de archivo no válido'}), 400
+
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    image_path = os.path.join('', filename)
+
+    Estudiante.updateImage( filename, id_usuario)
+    response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path})
+    
+    # Agregar las cabeceras de control de caché
+    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+
+    response = make_response(response)
+    return response,200
+   
+@app.route('/<filename>')
+
+def display(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route('/programas')
@@ -38,12 +86,13 @@ def registro():
         usuario = User(None,'1', '1', data['correo'], data['contraseña'])
         id = User.save(usuario)
         estudiante = Estudiante(id, data['nombre'], data['apellido'], data['tipoDocumento'],
-                                data['numeroDocumento'], data['numeroTelefono'], data['programa'], data['facultad'], data['correo'])
+                                data['numeroDocumento'], data['numeroTelefono'], data['programa'], data['facultad'], data['correo'],None)
         Estudiante.save(estudiante)
         status = 200
         response = {'message': "solicitud procesada"}
         return jsonify(response)
     except Exception as e:
+        print(e)
         return jsonify({'message': "error"})
 
 
@@ -107,10 +156,7 @@ def perfilDocente():
     
     headers=request.headers
     payload=Security.verify_token(headers)
-    print(payload)
-    id_usuario=payload['id_usuario']
-    
-    
+    id_usuario=payload['id_usuario']    
     estudiante=Docente.get(id_usuario)
     return jsonify(estudiante.serialize())
     
@@ -144,6 +190,7 @@ def agregarDocente():
             return jsonify(response, status, data)
         
         usuario = User(None,'2', '1', data['correo'], data['contraseña'])
+        print(usuario)
         id = User.save(usuario)
 
         docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
