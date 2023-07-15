@@ -1,76 +1,100 @@
+from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,make_response,send_from_directory
 from flask_cors import CORS
-import jwt
-from models.modelosSimples import getPrograms, getTipoDocumento
+from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon
 from models.estudiante import Estudiante
 from models.user import User
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword
+from models.horario import Horario
 from models.docente import Docente
+from models import consultasHorario
+from models.consultasHorario import consultasHorario
 from utils.Security import Security
-from werkzeug.utils import secure_filename
-import os
+import jwt
+import json
 
 
 app = Flask(__name__)
 
-UPLOAD_FOLDER ='src/static/uploads'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+# UPLOAD_FOLDER ='src/static/uploads'
+# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 CORS(app, origins='http://localhost:4200',supports_credentials=True)
 app.secret_key="secret_key"
 
-ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+# ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-def allowed_file(filename):
-    print("hola")
-    return '.' in filename and filename.rsplit('.', 1)[1].lower()
+# def allowed_file(filename):
+#     print("hola")
+#     return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
-@app.route("/upload",methods=["POST"])
-def upload():
-    verify = request.headers
-    payload = Security.verify_token(verify)
-    print(payload)
-    id_usuario = payload['id_usuario']
-
-    if 'file' not in request.files:
-        return jsonify({'error': 'No se encontró el archivo'}), 400
-
-    file = request.files['file']
-    if file.filename == '':
-        return jsonify({'error': 'Nombre de archivo no válido'}), 400
-
-    filename = secure_filename(file.filename)
-    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-    image_path = os.path.join('', filename)
-
-    Estudiante.updateImage( filename, id_usuario)
-    response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path})
+# @app.route("/upload",methods=["POST"])
+# def upload():
     
-    # Agregar las cabeceras de control de caché
-    response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-    response.headers['Pragma'] = 'no-cache'
-    response.headers['Expires'] = '0'
+#     verify = request.headers
+#     payload = Security.verify_token(verify)
+#     print(payload)
+#     id_usuario = payload['id_usuario']
 
-    response = make_response(response)
-    return response,200
+#     if 'file' not in request.files:
+#         return jsonify({'error': 'No se encontró el archivo'}), 400
+
+#     file = request.files['file']
+#     if file.filename == '':
+#         return jsonify({'error': 'Nombre de archivo no válido'}), 400
+    
+#     filename = secure_filename(file.filename)
+#     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+#     image_path = os.path.join('', filename)
+
+#     Estudiante.updateImage( filename, id_usuario)
+#     print(image_path)
+#     estudiante= Estudiante.get(id_usuario)
    
-@app.route('/<filename>')
+#     response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path,'datos':estudiante.serialize()})
+    
+#     # Agregar las cabeceras de control de caché
+#     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
+#     response.headers['Pragma'] = 'no-cache'
+#     response.headers['Expires'] = '0'
 
-def display(filename):
-    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+#     response = make_response(response)
+#     return response,200
+   
+# @app.route('/display/<filename>')
+
+# def display(filename):
+   
+#     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
-@app.route('/programas')
-def programas():
-    programas = getPrograms()
-    return jsonify(programas)
+@app.route('/salon',)
+def salon():
+    salon = getSalon()
+    return jsonify(salon)
+
+@app.route('/materias')
+def materias():
+    materias = getMaterias()
+    return jsonify(materias)
 
 
 @app.route('/tipo-documento')
 def tipoDocumento():
     tipoDocumento = getTipoDocumento()
     return jsonify(tipoDocumento)
+
+@app.route('/sedes')
+def sedes():
+    sedes = getSedes()
+    return jsonify(sedes)
+
+@app.route('/programas')
+def programas():
+    programas = getPrograms()
+    return jsonify(programas)
+
 
 
 @app.route('/registro', methods=['post'])
@@ -148,6 +172,7 @@ def perfil():
     
     
     estudiante=Estudiante.get(id_usuario)
+    print('estudiante perfil',estudiante.serialize())
     return jsonify(estudiante.serialize())
 
 @app.route('/perfil-docente',methods=['get'])
@@ -192,24 +217,73 @@ def agregarDocente():
         usuario = User(None,'2', '1', data['correo'], data['contraseña'])
         print(usuario)
         id = User.save(usuario)
-
+        foto="https://acsilat.org/images/2020/05/06/teacher.png"
         docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
-                                data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'])
+                                data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'],foto)
         Docente.save(docente)
         
         status = 200
         response = {'message': "solicitud procesada"}
         return jsonify(response)
     
+@app.route('/agregarHorario',methods=['post'])
+
+def agregarHorario():
+    horario=request.json
+    print(horario)
+    headers=request.headers
+    print(horario['facultad'])
+    payload=Security.verify_token(headers)
+    
+    id_facultad=Horario.buscarFacultad(horario['facultad'])
+    id_programa=Horario.buscarPrograma(horario['programa'])
+    id_materia=Horario.agregarMateria(horario['materia'])
+    id_capacidad=Horario.agregarCapacidad(horario['capacidad'])
+    id_salon=Horario.agregarSalon(horario['salon'],id_capacidad)
+    id_sede=Horario.agregarSede(horario['sede'])
+    id_usuario=payload['id_usuario']
+    horario=Horario(0,id_facultad,id_programa,id_materia,id_sede,id_salon,id_usuario,1,horario['capacidad'],horario['tema'],horario['fecha'],horario['horaInicio'],horario['horaFin'],None)
+    Horario.agregarHorario(horario)
+    return jsonify({"horario":"horario creado"})
+    
+@app.route('/horario')
+
+def horario():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    user_id=payload['id_usuario']
+    datos= Horario.getLittleDataForTeacher(user_id)
+    dataModificada=Horario.serialize(datos)
+    return jsonify({"data":dataModificada})
 
 
+@app.route('/obtenerCapacidad',methods=['post'])
 
+def obtenerCapacidad():
+    
+    data=request.json
+    headers=request.headers
+    print(data)
+    payload=Security.verify_token(headers)
+    id_salon,id_capacidad=Horario.obtenerSalon(data['salon'])
+    print(id_salon,id_capacidad)
+    
+    capacidad=Horario.obtenerCapacidad(id_capacidad)
+   
+    return jsonify({"capacidad":capacidad})
 
+@app.route('/mostrarHorario')
 
-
-
-
-
+def mostrarHorario():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    
+    ids=consultasHorario.obtenerIds(id_usuario)
+    data=consultasHorario.mostrarHorario(ids)
+    horario={"cupos":data[0][0],"tema":data[0][1],"fecha":data[0][2],"horaInicio":data[0][3],"horaFin":data[0][4],"fecha_generacion_tutoria":data[0][5],"facultad":data[0][6],"programa":data[0][7],"materia":data[0][8],"sede":data[0][9],"id_estado_tutoria":data[0][10],"salon":data[0][11]}
+    print(horario)
+    return jsonify({"data":horario})
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True,)

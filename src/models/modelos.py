@@ -1,5 +1,6 @@
 from databases.conexion import getConecction
 from models.user import User
+from models.horario import Horario
 mybd=getConecction()
 cursor=mybd.cursor()
 def insertarEstudiante(estudiante):
@@ -53,6 +54,15 @@ def saveFoto(img,id_user):
        sql=f"update estudiantes set foto='{img}' where id_usuario='{id_user}'"
        cursor.execute(sql)
        mybd.commit()
+
+def getLittleDataForTeacher(id_teacher):
+       sql=f"select nombres,apellidos,facultad from docentes where id_usuario='{id_teacher}'"
+       cursor.execute(sql)
+       data=cursor.fetchone()[0]
+       dataJson=Horario.serialize(data)
+       print(dataJson)
+       return dataJson
+       
 
 
 

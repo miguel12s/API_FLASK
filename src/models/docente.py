@@ -29,7 +29,7 @@ class Docente:
         self.foto=foto
     @classmethod
     def save(self,docente):
-        sql=f" INSERT INTO docentes (id_usuario, nombres, apellidos, tipo_documento, numero_documento, celular, facultad, correo,foto) VALUES ('{docente.id}','{docente.nombre}','{docente.apellido}','{docente.tipoDocumento}','{docente.numeroDocumento}','{docente.celular}','{docente.facultad}','{docente.correo}',{'https://acsilat.org/images/2020/05/06/teacher.png'})"
+        sql=f" INSERT INTO docentes (id_usuario, nombres, apellidos, tipo_documento, numero_documento, celular, facultad, correo,foto) VALUES ('{docente.id}','{docente.nombre}','{docente.apellido}','{docente.tipoDocumento}','{docente.numeroDocumento}','{docente.celular}','{docente.facultad}','{docente.correo}','{docente.foto}')"
         cursor.execute(sql)
         bd.commit()
     def get(id_docente):
