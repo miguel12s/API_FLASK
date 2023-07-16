@@ -281,9 +281,10 @@ def mostrarHorario():
     
     ids=consultasHorario.obtenerIds(id_usuario)
     data=consultasHorario.mostrarHorario(ids)
-    horario={"cupos":data[0][0],"tema":data[0][1],"fecha":data[0][2],"horaInicio":data[0][3],"horaFin":data[0][4],"fecha_generacion_tutoria":data[0][5],"facultad":data[0][6],"programa":data[0][7],"materia":data[0][8],"sede":data[0][9],"id_estado_tutoria":data[0][10],"salon":data[0][11]}
-    print(horario)
-    return jsonify({"data":horario})
+    tutorias=consultasHorario.serialize(data)
+   
+    
+    return jsonify({"data":tutorias})
 
 if __name__ == '__main__':
     app.run(debug=True,)
