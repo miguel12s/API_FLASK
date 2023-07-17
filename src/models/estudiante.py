@@ -1,8 +1,7 @@
 from databases.conexion import getConecction
 from werkzeug.security import generate_password_hash
 from models.modelos import saveFoto
-bd=getConecction()
-cursor=bd.cursor()
+
 class Estudiante:
     id:str
     nombre:str
@@ -31,11 +30,14 @@ class Estudiante:
 
     @classmethod
     def save(self,estudiante):
-        print(estudiante.correo)
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo,foto) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo[0]}','{'ubsolo.png'}')" 
         cursor.execute(sql)
         bd.commit()
     def get(id_estudiante):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select * from estudiantes where id_usuario='{id_estudiante}'"
         cursor.execute(sql)
         estudiante=cursor.fetchone()

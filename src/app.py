@@ -1,10 +1,11 @@
+import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,make_response,send_from_directory
 from flask_cors import CORS
 from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon
 from models.estudiante import Estudiante
 from models.user import User
-from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword
+from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol
 from models.horario import Horario
 from models.docente import Docente
 from models import consultasHorario
@@ -16,57 +17,59 @@ import json
 
 app = Flask(__name__)
 
-# UPLOAD_FOLDER ='src/static/uploads'
-# app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-# app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
+UPLOAD_FOLDER ='src/static/uploads'
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 CORS(app, origins='http://localhost:4200',supports_credentials=True)
 app.secret_key="secret_key"
 
-# ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
+ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
-# def allowed_file(filename):
-#     print("hola")
-#     return '.' in filename and filename.rsplit('.', 1)[1].lower()
+def allowed_file(filename):
+    print("hola")
+    return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
-# @app.route("/upload",methods=["POST"])
-# def upload():
+@app.route("/upload",methods=["POST"])
+def upload():
     
-#     verify = request.headers
-#     payload = Security.verify_token(verify)
-#     print(payload)
-#     id_usuario = payload['id_usuario']
+    verify = request.headers
+    payload = Security.verify_token(verify)
+    print(payload)
+    id_usuario = payload['id_usuario']
 
-#     if 'file' not in request.files:
-#         return jsonify({'error': 'No se encontró el archivo'}), 400
+    if 'file' not in request.files:
+        return jsonify({'error': 'No se encontró el archivo'}), 400
 
-#     file = request.files['file']
-#     if file.filename == '':
-#         return jsonify({'error': 'Nombre de archivo no válido'}), 400
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'Nombre de archivo no válido'}), 400
     
-#     filename = secure_filename(file.filename)
-#     file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
-#     image_path = os.path.join('', filename)
-
-#     Estudiante.updateImage( filename, id_usuario)
-#     print(image_path)
-#     estudiante= Estudiante.get(id_usuario)
-   
-#     response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path,'datos':estudiante.serialize()})
+    filename = secure_filename(file.filename)
+    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+    image_path = os.path.join('', filename)
+    rol=getIdRol(id_usuario)
+    print(rol)
+    if(rol==1):
+        Estudiante.updateImage( filename, id_usuario)
+        print(image_path)
+        estudiante= Estudiante.get(id_usuario)
+        response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path,'datos':estudiante.serialize()})
+        
+    elif(rol==2):
+        Docente.updateImage(filename,id_usuario)
+        docente=Docente.get(id_usuario)
+        response = jsonify({'message': 'Archivo subido correctamente', 'imgPath': image_path,'datos':docente.serialize()})
     
-#     # Agregar las cabeceras de control de caché
-#     response.headers['Cache-Control'] = 'no-cache, no-store, must-revalidate'
-#     response.headers['Pragma'] = 'no-cache'
-#     response.headers['Expires'] = '0'
+  
 
-#     response = make_response(response)
-#     return response,200
+    return response,200
    
-# @app.route('/display/<filename>')
+@app.route('/display/<filename>')
 
-# def display(filename):
+def display(filename):
    
-#     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
 
 @app.route('/salon',)

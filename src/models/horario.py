@@ -1,8 +1,7 @@
 
 from databases.conexion import getConecction
 from datetime import datetime
-bd=getConecction()
-cursor=bd.cursor()
+
 class Horario:
     id_tutoria:int
     id_facultad:int
@@ -35,6 +34,8 @@ class Horario:
         self.hora_inicio=hora_inicio
     @classmethod
     def agregarMateria(self,materia):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f" select id_materia from materias where materia='{materia}'"
         cursor.execute(sql)
 
@@ -44,6 +45,8 @@ class Horario:
         
     @classmethod
     def agregarSede(self,sede):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select id_sede from sedes where sede='{sede}'"
         cursor.execute(sql)
         return cursor.fetchone()[0]
@@ -53,12 +56,16 @@ class Horario:
             
     @classmethod
     def agregarSalon(self,salon,id_capacidad):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"insert into salones (id_salon,id_capacidad,salon) values('{0}','{id_capacidad}','{salon}')"
         cursor.execute(sql)
         bd.commit()
         return cursor.getlastrowid()
     @classmethod  
     def agregarCapacidad(self,capacidad):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"insert into capacidades (id_capacidad,capacidad) values('{0}','{capacidad}')"
         cursor.execute(sql)
 
@@ -67,6 +74,8 @@ class Horario:
        
     @classmethod
     def agregarHorario(self,horario):
+        bd=getConecction()
+        cursor=bd.cursor()
         fecha=datetime.now()
         print('id_programa',horario.id_programa)
         sql=f"insert into horario_tutorias (id_tutoria, id_facultad, id_programa, id_materia, id_sede, id_salon, id_usuario, id_estado_tutoria, cupos, tema, fecha, hora_inicial, hora_final, fecha_generacion_tutoria) VALUES ('{0}','{horario.id_facultad}','{horario.id_programa}','{horario.id_materia}','{horario.id_sede}','{horario.id_salon}','{horario.id_usuario}','{horario.id_estado_tutoria}','{horario.cupos}','{horario.tema}','{horario.fecha}','{horario.hora_inicio}','{horario.hora_final}','{fecha}')" 
@@ -75,6 +84,8 @@ class Horario:
 
     @classmethod
     def getLittleDataForTeacher(self,id_teacher):
+       bd=getConecction()
+       cursor=bd.cursor()
        sql=f"select nombres,apellidos,facultad from docentes where id_usuario='{id_teacher}'"
        cursor.execute(sql)
        data=cursor.fetchone()
@@ -91,12 +102,16 @@ class Horario:
     
     @classmethod
     def buscarPrograma(self,programa):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select id_programa from programas where programa='{programa}' "
         cursor.execute(sql)
         id_programa=cursor.fetchone()[0]
         return id_programa
     @classmethod
     def buscarFacultad(self,facultad):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select id_facultad from facultades where facultad='{facultad}' "
         cursor.execute(sql)
         id_programa=cursor.fetchone()[0]
@@ -104,6 +119,8 @@ class Horario:
     @classmethod
 
     def obtenerSalon(self,salon):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select id_salon,id_capacidad from salones where salon='{salon}' "
         cursor.execute(sql)
         data=cursor.fetchall()
@@ -111,6 +128,8 @@ class Horario:
 
     @classmethod
     def obtenerCapacidad(self,id_salon):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"select capacidades.capacidad from capacidades join salones on capacidades.id_capacidad=salones.id_capacidad WHERE capacidades.id_capacidad={id_salon}"
         cursor.execute(sql)
         return cursor.fetchone()[0]

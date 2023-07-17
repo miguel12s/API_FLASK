@@ -1,13 +1,14 @@
 from databases.conexion import getConecction
 
 
-mybd = getConecction()
-cursor = mybd.cursor()
-
 
 class consultasHorario():
     @classmethod
     def mostrarHorario(self, ids):
+        mybd = getConecction()
+        cursor = mybd.cursor()
+
+
         tutorias=[]
         for i in ids:
                 
@@ -22,6 +23,10 @@ class consultasHorario():
 
     @classmethod
     def obtenerIds(self, id_usuario):
+        mybd = getConecction()
+        cursor = mybd.cursor()
+
+
         sql = f"select id_facultad,id_programa,id_materia,id_sede,id_salon,id_estado_tutoria from horario_tutorias where id_usuario='{id_usuario}' "
         cursor.execute(sql)
         ids = cursor.fetchall()

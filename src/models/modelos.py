@@ -1,15 +1,18 @@
 from databases.conexion import getConecction
 from models.user import User
 from models.horario import Horario
-mybd=getConecction()
-cursor=mybd.cursor()
+
 def insertarEstudiante(estudiante):
+       mybd=getConecction()
+       cursor=mybd.cursor() 
        cursor.execute(f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo[0]}')")
        mybd.commit()
        
 
 
 def searchUserForRol(passwordHashed,data):
+       mybd=getConecction()
+       cursor=mybd.cursor()
        password=User.checkPassword(passwordHashed[0],data['contraseña'])
        
        if(password):
@@ -30,6 +33,8 @@ def searchUserForRol(passwordHashed,data):
 #        return data
 
 def getPasswordHash(correo):
+       mybd=getConecction()
+       cursor=mybd.cursor()
        print(correo)
        sql=f"select contraseña from usuarios where correo='{correo}'"
        cursor.execute(sql)
@@ -38,6 +43,8 @@ def getPasswordHash(correo):
        return password
 
 def getPasswordForId(id_usuario):
+       mybd=getConecction()
+       cursor=mybd.cursor()
        sql=f"select contraseña from usuarios where id_usuario='{id_usuario}'"
        cursor.execute(sql)
        password=cursor.fetchone()[0]
@@ -46,16 +53,29 @@ def getPasswordForId(id_usuario):
 
 def updatePassword(id,password):
        print('hash',password)
+       mybd=getConecction()
+       cursor=mybd.cursor()
        sql=f"update usuarios set contraseña='{password}' where id_usuario='{id}'"
        cursor.execute(sql)
        mybd.commit()
 
 def saveFoto(img,id_user):
+       mybd=getConecction()
+       cursor=mybd.cursor()
        sql=f"update estudiantes set foto='{img}' where id_usuario='{id_user}'"
        cursor.execute(sql)
        mybd.commit()
 
+def saveFotoDocente(img,id_user):
+       mybd=getConecction()
+       cursor=mybd.cursor()
+       sql=f"update docentes set foto='{img}' where id_usuario='{id_user}'"
+       cursor.execute(sql)
+       mybd.commit()
+
 def getLittleDataForTeacher(id_teacher):
+       mybd=getConecction()
+       cursor=mybd.cursor()
        sql=f"select nombres,apellidos,facultad from docentes where id_usuario='{id_teacher}'"
        cursor.execute(sql)
        data=cursor.fetchone()[0]
@@ -63,7 +83,14 @@ def getLittleDataForTeacher(id_teacher):
        print(dataJson)
        return dataJson
        
-
+def getIdRol(id_usuario):
+       mybd=getConecction()
+       cursor=mybd.cursor()
+       sql=f"select id_rol from usuarios where id_usuario='{id_usuario}'"
+       cursor.execute(sql)
+       data=cursor.fetchone()[0]
+       
+       return data
 
 
 
