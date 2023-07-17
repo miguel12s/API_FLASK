@@ -289,5 +289,15 @@ def mostrarHorario():
     
     return jsonify({"data":tutorias})
 
+@app.route('/mostrarHorarios')
+
+def mostrarHorarios():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    if(payload['id_usuario']):
+        horario=Horario.mostrarHorarios()
+
+
+
 if __name__ == '__main__':
     app.run(debug=True,)

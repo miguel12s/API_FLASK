@@ -133,7 +133,7 @@ class Horario:
         sql=f"select capacidades.capacidad from capacidades join salones on capacidades.id_capacidad=salones.id_capacidad WHERE capacidades.id_capacidad={id_salon}"
         cursor.execute(sql)
         return cursor.fetchone()[0]
-
+   
        
     
 
