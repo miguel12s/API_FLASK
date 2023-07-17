@@ -1,11 +1,11 @@
 from databases.conexion import getConecction
 
 
-mybd = getConecction()
-cursor = mybd.cursor()
-
 
 def getPrograms():
+    
+    mybd = getConecction()
+    cursor = mybd.cursor()
     
     sql = "select programa  from programas"
     cursor.execute(sql)
@@ -15,12 +15,18 @@ def getPrograms():
 
 
 def getTipoDocumento():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
     sql="select tipo_documento from tipos_documento"
     cursor.execute(sql)
     tiposDocumento = cursor.fetchall()
     return tiposDocumento
 
 def getSedes():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
     sql="select sede from sedes"
     cursor.execute(sql)
     sedes = cursor.fetchall()
@@ -28,6 +34,9 @@ def getSedes():
 
 
 def getMaterias():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
     sql="select materia from materias"
     cursor.execute(sql)
     materias = cursor.fetchall()
@@ -35,6 +44,9 @@ def getMaterias():
 
 
 def getSalon():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
     sql="select salon from salones"
     cursor.execute(sql)
     materias = cursor.fetchall()
