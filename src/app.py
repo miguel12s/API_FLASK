@@ -5,8 +5,9 @@ from flask_cors import CORS
 from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon
 from models.estudiante import Estudiante
 from models.user import User
-from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol
+from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol,getHorarioForId
 from models.horario import Horario
+from models.horario_modelos import mostrarHorarioss
 from models.docente import Docente
 from models import consultasHorario
 from models.consultasHorario import consultasHorario
@@ -294,8 +295,21 @@ def mostrarHorario():
 def mostrarHorarios():
     headers=request.headers
     payload=Security.verify_token(headers)
-    if(payload['id_usuario']):
-        horario=Horario.mostrarHorarios()
+    horario=mostrarHorarioss()
+    horarioTutorias=Horario.serializeHorario(horario)
+    print(horarioTutorias)
+    return jsonify({"data":horarioTutorias})
+
+@app.route('/mostrarHorariosId/<id>')
+
+def mostrarHorariosId(id):
+    print(id)
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    horario=getHorarioForId(id)
+    horarioTutorias=consultasHorario.serializeId(horario)
+    print(horarioTutorias)
+    return jsonify({"data":horarioTutorias})
 
 
 

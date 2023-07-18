@@ -100,6 +100,23 @@ class Horario:
             'facultad':data[2]
         }
     
+    
+
+    @classmethod
+    def serializeHorario(self,horario):
+       tutorias=[]
+       for i in horario:
+              tutoria={"cupos":i[0],"tema":i[1],"fecha":i[2],"horaInicio":i[3],"horaFin":i[4],"id_tutoria":i[5],"facultad":i[6],"programa":i[7],"materia":i[8],"sede":i[9],
+                       
+              "estado_tutoria":i[10],
+              "nombres":i[11],
+                       "apellidos":i[12],
+                       "salon":i[13],
+                       "capacidad":i[14]
+                       }
+              tutorias.append(tutoria)
+       return tutorias
+    
     @classmethod
     def buscarPrograma(self,programa):
         bd=getConecction()

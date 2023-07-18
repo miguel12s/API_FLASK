@@ -40,3 +40,15 @@ class consultasHorario():
               tutorias.append(tutoria)
               print(tutorias)
         return tutorias
+    @classmethod
+    def serializeId(self,i):
+        print(i)
+        return {
+            "cupos":i[0][0],"tema":i[0][1],"fecha":i[0][2],"horaInicio":i[0][3],"horaFin":i[0][4],"id_tutoria":i[0][5],"facultad":i[0][6],"programa":i[0][7],"materia":i[0][8],"sede":i[0][9],
+                       
+              "estado_tutoria":i[0][10],
+              "nombres":i[0][11],
+                       "apellidos":i[0][12],
+                       "salon":i[0][13],
+                       "capacidad":i[0][14]
+        }
