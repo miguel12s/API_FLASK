@@ -7,7 +7,7 @@ from models.estudiante import Estudiante
 from models.user import User
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol,getHorarioForId
 from models.horario import Horario
-from models.horario_modelos import mostrarHorarioss
+from models.horario_modelos import mostrarHorarioss,agendarTutoria,actualizarCupos,verificarListaDeEstudiantes
 from models.docente import Docente
 from models import consultasHorario
 from models.consultasHorario import consultasHorario
@@ -310,6 +310,26 @@ def mostrarHorariosId(id):
     horarioTutorias=consultasHorario.serializeId(horario)
     print(horarioTutorias)
     return jsonify({"data":horarioTutorias})
+
+@app.route('/agendar',methods=['post'])
+
+def agendar():
+    headers=request.headers
+    data=request.json
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    id_tutoria=data['id_tutoria']
+    id_estado_tutoria=data['id_estado_tutoria']
+    verificar=verificarListaDeEstudiantes(id_tutoria)
+    
+    if(verificarListaDeEstudiantes(id_tutoria)==None or verificarListaDeEstudiantes(id_tutoria)!=id_tutoria ):
+        agendarTutoria(id_usuario,id_tutoria,id_estado_tutoria)
+        actualizarCupos(id_usuario)
+        return jsonify({"message":"agendamiento creado con exito"})
+    return jsonify({"error":"ya ha agendado esta tutoria"})
+    
+
+
 
 
 

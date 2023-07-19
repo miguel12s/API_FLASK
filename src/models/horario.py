@@ -58,19 +58,19 @@ class Horario:
     def agregarSalon(self,salon,id_capacidad):
         bd=getConecction()
         cursor=bd.cursor()
-        sql=f"insert into salones (id_salon,id_capacidad,salon) values('{0}','{id_capacidad}','{salon}')"
+        sql=f"select id_salon from salones where salon='{salon}'  "
         cursor.execute(sql)
-        bd.commit()
-        return cursor.getlastrowid()
+        
+        return cursor.fetchone()[0]
     @classmethod  
     def agregarCapacidad(self,capacidad):
         bd=getConecction()
         cursor=bd.cursor()
-        sql=f"insert into capacidades (id_capacidad,capacidad) values('{0}','{capacidad}')"
+        sql=f"select id_capacidad from capacidades where capacidad='{capacidad}'"
         cursor.execute(sql)
 
-        bd.commit()
-        return cursor.getlastrowid()
+      
+        return cursor.fetchone()[0]
        
     @classmethod
     def agregarHorario(self,horario):
@@ -104,6 +104,7 @@ class Horario:
 
     @classmethod
     def serializeHorario(self,horario):
+       
        tutorias=[]
        for i in horario:
               tutoria={"cupos":i[0],"tema":i[1],"fecha":i[2],"horaInicio":i[3],"horaFin":i[4],"id_tutoria":i[5],"facultad":i[6],"programa":i[7],"materia":i[8],"sede":i[9],
@@ -112,7 +113,8 @@ class Horario:
               "nombres":i[11],
                        "apellidos":i[12],
                        "salon":i[13],
-                       "capacidad":i[14]
+                       "capacidad":i[14],
+                       "id_estado_tutoria":i[15]
                        }
               tutorias.append(tutoria)
        return tutorias
