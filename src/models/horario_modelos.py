@@ -17,10 +17,12 @@ def agendarTutoria(id_usuario,id_tutoria,id_estado_tutoria):
     cursor.execute(sql)
     bd.commit()
 
-def actualizarCupos(id_tutoria):
+def actualizarCupos(cupos,id_tutoria):
+    
     bd=getConecction()
     cursor=bd.cursor()
-    sql=f"UPDATE horario_tutorias SET cupos=cupos-1 WHERE id_tutoria={id_tutoria} "
+    
+    sql=f"update horario_tutorias set cupos={cupos} where id_tutoria={id_tutoria} "
     cursor.execute(sql)
     bd.commit()
 
@@ -31,11 +33,41 @@ def verificarListaDeEstudiantes(id_usuario):
     try:
         sql=f"select id_tutoria from lista_estudiantes where id_usuario={id_usuario}"
         cursor.execute(sql)
-        id_tutoria=cursor.fetchone()[0]
-        if(id_tutoria)==None:
-            return None
+        results=cursor.fetchall()
+        
+        if not results:
+            return []
         else:
-            return id_tutoria
+            id_tutorias=[result[0] for result in results]
+            return id_tutorias
     except :
         print("error")
+        return None
+def mostrarTutoriasPendientesEstudiante(id_usuario):
+    bd=getConecction()
+    cursor=bd.cursor()
+    try:
+            sql=f"""
+select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,le.id_tutoria,f.facultad ,p.programa,m.materia,se.sede,et.estado_tutoria,d.nombres,d.apellidos,s.salon,c.capacidad , s.salon,c.capacidad ,d.nombres,d.apellidos,et.id_estado_tutoria from lista_estudiantes le inner join horario_tutorias h on h.id_tutoria=le.id_tutoria inner join estados_tutorias et on le.id_estado_tutoria=et.id_estado_tutoria inner join facultades f on f.id_facultad=h.id_facultad inner join programas p on p.id_programa=h.id_programa inner join materias m on m.id_materia=h.id_materia inner join salones s on s.id_salon=h.id_salon inner join capacidades c on c.id_capacidad=s.id_capacidad inner join docentes d on d.id_usuario=h.id_usuario inner join sedes se on se.id_sede=h.id_sede where le.id_usuario={id_usuario};
+
+            """
+            cursor.execute(sql)
+            return cursor.fetchall()
     
+    except Exception as Error:
+        print(Error)
+
+
+def obtenerCupos(id_tutoria):
+      bd=getConecction()
+      cursor=bd.cursor()
+      sql=f"SELECT h.cupos  from horario_tutorias h where id_tutoria={id_tutoria}"
+      cursor.execute(sql)
+      return cursor.fetchone()[0]
+
+def cancelarTutorias(id_tutoria,id_usuario):
+     bd=getConecction()
+     cursor=bd.cursor()
+     sql=f"DELETE FROM lista_estudiantes WHERE id_usuario={id_usuario} and id_tutoria={id_tutoria}"
+     cursor.execute(sql)
+     bd.commit()

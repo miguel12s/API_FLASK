@@ -38,10 +38,11 @@ class Estudiante:
     def get(id_estudiante):
         bd=getConecction()
         cursor=bd.cursor()
+        print(id_estudiante)
         sql=f"select * from estudiantes where id_usuario='{id_estudiante}'"
         cursor.execute(sql)
         estudiante=cursor.fetchone()
-        print('imagen estudiante',estudiante[9])
+        print(estudiante)
         return Estudiante(estudiante[0],estudiante[1],estudiante[2],estudiante[3],estudiante[4],estudiante[5],estudiante[6],estudiante[7],estudiante[8],estudiante[9])
     def serialize(self):
         return {

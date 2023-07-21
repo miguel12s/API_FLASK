@@ -7,7 +7,7 @@ from models.estudiante import Estudiante
 from models.user import User
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol,getHorarioForId
 from models.horario import Horario
-from models.horario_modelos import mostrarHorarioss,agendarTutoria,actualizarCupos,verificarListaDeEstudiantes
+from models.horario_modelos import mostrarHorarioss,agendarTutoria,actualizarCupos,verificarListaDeEstudiantes,mostrarTutoriasPendientesEstudiante,obtenerCupos,cancelarTutorias
 from models.docente import Docente
 from models import consultasHorario
 from models.consultasHorario import consultasHorario
@@ -318,17 +318,51 @@ def agendar():
     data=request.json
     payload=Security.verify_token(headers)
     id_usuario=payload['id_usuario']
+   
     id_tutoria=data['id_tutoria']
     id_estado_tutoria=data['id_estado_tutoria']
-    verificar=verificarListaDeEstudiantes(id_tutoria)
+    cupos=obtenerCupos(id_tutoria)
+    verificar=verificarListaDeEstudiantes(id_usuario)
+   
+    tutoria_ya_agendada=any( tutoria == id_tutoria for tutoria in verificar)
     
-    if(verificarListaDeEstudiantes(id_tutoria)==None or verificarListaDeEstudiantes(id_tutoria)!=id_tutoria ):
-        agendarTutoria(id_usuario,id_tutoria,id_estado_tutoria)
-        actualizarCupos(id_usuario)
-        return jsonify({"message":"agendamiento creado con exito"})
-    return jsonify({"error":"ya ha agendado esta tutoria"})
+    if not tutoria_ya_agendada:
+        if cupos!=0:
+            agendarTutoria(id_usuario, id_tutoria, id_estado_tutoria)
+            cupos-=1
+            actualizarCupos(cupos
+                ,id_tutoria)
+            return jsonify({"message": "agendamiento creado con exito"})
+        else:
+            return jsonify({"errorCupos":"los cupos estan completos :("})
+  
+    return jsonify({"error": "Ya ha agendado esta tutoria"})
     
+@app.route('/mostrarTutoriasEstudiante',methods=['get'])
 
+def mostrarTutoriasEstudiante():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    tutoriasPendientesEstudiante=mostrarTutoriasPendientesEstudiante(id_usuario)
+    tutoriasJson=Horario.serializeHorario(tutoriasPendientesEstudiante)
+    
+    return jsonify({"data":tutoriasJson})
+
+@app.route('/cancelarTutoria',methods=['post'])
+
+
+def cancelarTutoria():
+    headers=request.headers
+    data=request.json
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    id_tutoria=data
+    cancelarTutorias(id_tutoria,id_usuario)
+    cupos=obtenerCupos(id_tutoria)
+    cupos+=1
+    actualizarCupos(cupos,id_tutoria)
+    return jsonify({"data":"la tutoria ha sido cancelada"})
 
 
 
