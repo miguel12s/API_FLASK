@@ -1,5 +1,5 @@
 from databases.conexion import getConecction
-
+from models.horario import Horario
 
 
 def mostrarHorarioss():
@@ -71,3 +71,17 @@ def cancelarTutorias(id_tutoria,id_usuario):
      sql=f"DELETE FROM lista_estudiantes WHERE id_usuario={id_usuario} and id_tutoria={id_tutoria}"
      cursor.execute(sql)
      bd.commit()
+
+def getTutoriaForId(id_tutoria:str):
+    bd=getConecction()
+    cursor=bd.cursor()
+    sql=f"""select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.fecha_generacion_tutoria,f.facultad,p.programa,m.materia,s.sede,et.estado_tutoria,sa.salon,h.id_tutoria,c.capacidad from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join salones sa on h.id_salon=sa.id_salon  join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria 
+join capacidades c on c.id_capacidad=sa.id_capacidad
+WHERE h.id_tutoria={id_tutoria}"""
+    cursor.execute(sql)
+    return cursor.fetchall()
+ 
+
+def actualizarHorario(horario:Horario):
+    bd=getConecction()
+    cursor=bd.cursor()

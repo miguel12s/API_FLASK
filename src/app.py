@@ -2,15 +2,17 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,make_response,send_from_directory
 from flask_cors import CORS
-from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon
+from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria
 from models.estudiante import Estudiante
 from models.user import User
+from databases.conexion import getConecction
 from models.modelos import getPasswordHash,searchUserForRol,getPasswordForId,updatePassword,getIdRol,getHorarioForId
 from models.horario import Horario
-from models.horario_modelos import mostrarHorarioss,agendarTutoria,actualizarCupos,verificarListaDeEstudiantes,mostrarTutoriasPendientesEstudiante,obtenerCupos,cancelarTutorias
+from models.horario_modelos import mostrarHorarioss,agendarTutoria,actualizarCupos,verificarListaDeEstudiantes,mostrarTutoriasPendientesEstudiante,obtenerCupos,cancelarTutorias,getTutoriaForId
 from models.docente import Docente
 from models import consultasHorario
 from models.consultasHorario import consultasHorario
+from models.modelosUpdate import ModelosUpdate
 from utils.Security import Security
 import jwt
 import json
@@ -24,7 +26,7 @@ app.config['MAX_CONTENT_LENGTH'] = 16 * 1024 * 1024
 
 CORS(app, origins='http://localhost:4200',supports_credentials=True)
 app.secret_key="secret_key"
-
+bd=getConecction()
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
@@ -78,7 +80,16 @@ def salon():
     salon = getSalon()
     return jsonify(salon)
 
+@app.route('/estadoTutoria')
+
+
+def estadoTutoria():
+    estado=getEstadoTutoria()
+    return jsonify(estado)
+
 @app.route('/materias')
+
+
 def materias():
     materias = getMaterias()
     return jsonify(materias)
@@ -269,12 +280,12 @@ def obtenerCapacidad():
     headers=request.headers
     print(data)
     payload=Security.verify_token(headers)
-    id_salon,id_capacidad=Horario.obtenerSalon(data['salon'])
-    print(id_salon,id_capacidad)
+    id_salon,id_capacidad,id_sede=Horario.obtenerSalon(data['salon'])
+    print(id_salon,id_capacidad,id_sede)
     
     capacidad=Horario.obtenerCapacidad(id_capacidad)
-   
-    return jsonify({"capacidad":capacidad})
+    
+    return jsonify({"data":capacidad})
 
 @app.route('/mostrarHorario')
 
@@ -285,6 +296,7 @@ def mostrarHorario():
     
     ids=consultasHorario.obtenerIds(id_usuario)
     data=consultasHorario.mostrarHorario(ids)
+    print("tutorias",data)
     tutorias=consultasHorario.serialize(data)
    
     
@@ -297,7 +309,6 @@ def mostrarHorarios():
     payload=Security.verify_token(headers)
     horario=mostrarHorarioss()
     horarioTutorias=Horario.serializeHorario(horario)
-    print(horarioTutorias)
     return jsonify({"data":horarioTutorias})
 
 @app.route('/mostrarHorariosId/<id>')
@@ -364,6 +375,41 @@ def cancelarTutoria():
     actualizarCupos(cupos,id_tutoria)
     return jsonify({"data":"la tutoria ha sido cancelada"})
 
+@app.route('/obtenerTutoria/<id_tutoria>',methods=['get'])
+
+
+def obtenerTutoria(id_tutoria):
+    print(id_tutoria)   
+    tutoria=getTutoriaForId(id_tutoria) 
+    
+    horario=consultasHorario.serializeTutoria(tutoria)
+    print(horario)
+    return jsonify({"data":horario})
+
+
+
+@app.route('/actualizar/<id_tutoria>',methods=['POST'])
+
+def actualizar(id_tutoria):
+    headers=request.headers
+    body=request.json
+    print(body)
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    horario=ModelosUpdate(bd)
+    ids=horario.obtenerIdsTabla(id_tutoria)
+    cupos=horario.obtenerCupos(id_tutoria)
+    id_estado=horario.obtenerEstado(body['estadoTutoria'])
+    print(id_estado)
+    horarioo=Horario(id_tutoria,ids['id_facultad'],ids['id_programa'],ids['id_materia'],ids['id_sede'],ids['id_salon'],id_usuario,id_estado,cupos,body['tema'],body['fecha'],body['horaInicio'],body['horaFin'],0) 
+    horario.actualizarTutoria(horarioo)
+    
+    
+    
+
+
+    return jsonify({"data":"actualizado con exito"})
+    
 
 
 

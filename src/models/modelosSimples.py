@@ -51,3 +51,12 @@ def getSalon():
     cursor.execute(sql)
     materias = cursor.fetchall()
     return materias
+
+def getEstadoTutoria():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
+    sql="select estado_tutoria from estados_tutorias"
+    cursor.execute(sql)
+    estado = cursor.fetchall()
+    return estado
