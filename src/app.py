@@ -360,7 +360,7 @@ def agendar():
     
     if not tutoria_ya_agendada:
         if cupos!=0:
-            agendarTutoria(id_usuario, id_tutoria, id_estado_tutoria)
+            agendarTutoria(id_usuario, id_tutoria, 1)
             cupos-=1
             actualizarCupos(cupos
                 ,id_tutoria)
