@@ -33,14 +33,7 @@ class Horario:
         self.fecha_generacion_tutoria=fecha_generacion_tutoria
         self.hora_inicio=hora_inicio
 
-        def __str__(self):
-         return (
-            f"id_tutoria: {self.id_tutoria}, id_facultad: {self.id_facultad}, id_programa: {self.id_programa}, "
-            f"id_materia: {self.id_materia}, id_sede: {self.id_sede}, id_salon: {self.id_salon}, "
-            f"id_usuario: {self.id_usuario}, id_estado_tutoria: {self.id_estado_tutoria}, cupos: {self.cupos}, "
-            f"tema: {self.tema}, fecha: {self.fecha}, hora_inicio: {self.hora_inicio}, hora_final: {self.hora_final}, "
-            f"fecha_generacion_tutoria: {self.fecha_generacion_tutoria}"
-         )
+        
     @classmethod
     def agregarMateria(self,materia):
         bd=getConecction()
@@ -113,7 +106,7 @@ class Horario:
 
     @classmethod
     def serializeHorario(self,horario):
-       
+      
        tutorias=[]
        for i in horario:
               tutoria={"cupos":i[0],"tema":i[1],"fecha":i[2],"horaInicio":i[3],"horaFin":i[4],"id_tutoria":i[5],"facultad":i[6],"programa":i[7],"materia":i[8],"sede":i[9],

@@ -13,6 +13,7 @@ from models.docente import Docente
 from models import consultasHorario
 from models.consultasHorario import consultasHorario
 from models.modelosUpdate import ModelosUpdate
+from models.TutoriasPendientes import TutoriasPendientes
 from utils.Security import Security
 import jwt
 import json
@@ -302,6 +303,26 @@ def mostrarHorario():
     
     return jsonify({"data":tutorias})
 
+@app.route('/mostrarHorarioEstado')
+
+def mostrarHorarioEstado():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    
+    ids=consultasHorario.obtenerIds(id_usuario)
+    data=consultasHorario.mostrarHorarioEstado(ids)
+    print("tutorias",data)
+    tutorias=consultasHorario.serialize(data)
+   
+    
+    return jsonify({"data":tutorias})
+
+
+
+
+
+
 @app.route('/mostrarHorarios')
 
 def mostrarHorarios():
@@ -357,7 +378,8 @@ def mostrarTutoriasEstudiante():
     id_usuario=payload['id_usuario']
     tutoriasPendientesEstudiante=mostrarTutoriasPendientesEstudiante(id_usuario)
     tutoriasJson=Horario.serializeHorario(tutoriasPendientesEstudiante)
-    
+    print(tutoriasJson)
+   
     return jsonify({"data":tutoriasJson})
 
 @app.route('/cancelarTutoria',methods=['post'])
@@ -411,7 +433,17 @@ def actualizar(id_tutoria):
     return jsonify({"data":"actualizado con exito"})
     
 
+@app.route('/obtenerTutoriasPendientes',methods=['get'])
 
+def obtenerTutoriasPendientes():
+    headers=request.headers
+    payload=Security.verify_token(headers)
+    id_usuario=payload['id_usuario']
+    tutorias=TutoriasPendientes(bd)
+    data=tutorias.TutoriasPendientes(id_usuario)
+    dataJson=Horario.serializeHorario(data)
+    print(dataJson)
+    return jsonify({"data":dataJson})
 
 if __name__ == '__main__':
     app.run(debug=True,)

@@ -25,6 +25,7 @@ inner join capacidades c on sa.id_capacidad=c.id_capacidad
 where h.id_tutoria='{id_tutoria}'"""
         self.cursor.execute(sql)
         data=self.cursor.fetchall()
+        print(data)
         return {
             "id_programa":data[0][0],
             "id_sede":data[0][1],
