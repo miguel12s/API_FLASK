@@ -2,7 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,make_response,send_from_directory
 from flask_cors import CORS
-from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria
+from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail
 from models.estudiante import Estudiante
 from models.user import User
 from databases.conexion import getConecction
@@ -15,6 +15,7 @@ from models.consultasHorario import consultasHorario
 from models.modelosUpdate import ModelosUpdate
 from models.TutoriasPendientes import TutoriasPendientes
 from utils.Security import Security
+from services.Mail import send_email
 import jwt
 import json
 
@@ -420,9 +421,10 @@ def actualizar(id_tutoria):
     id_usuario=payload['id_usuario']
     horario=ModelosUpdate(bd)
     ids=horario.obtenerIdsTabla(id_tutoria)
+    print(ids)
     cupos=horario.obtenerCupos(id_tutoria)
     id_estado=horario.obtenerEstado(body['estadoTutoria'])
-    print(id_estado)
+    
     horarioo=Horario(id_tutoria,ids['id_facultad'],ids['id_programa'],ids['id_materia'],ids['id_sede'],ids['id_salon'],id_usuario,id_estado,cupos,body['tema'],body['fecha'],body['horaInicio'],body['horaFin'],0) 
     horario.actualizarTutoria(horarioo)
     
@@ -444,6 +446,27 @@ def obtenerTutoriasPendientes():
     dataJson=Horario.serializeHorario(data)
     print(dataJson)
     return jsonify({"data":dataJson})
+
+
+
+@app.route('/forgot',methods=['post'])
+
+def forgot():
+    data=request.json
+    print(data)
+    email=data['email']
+    if(email!=""):
+        number=existEmail(email)
+        existe=True if number==1 else False
+        if(existe):
+             subject = 'Cambio de contraseña'
+             body = 'la contraseña es miguel123'
+             send_email(subject,body,email)
+             return jsonify({"success":"la contraseña ha sido cambiada"})
+        return jsonify('el correo no existe en el sistema')
+    return jsonify({"message":"correo invalido"})
+
+
 
 if __name__ == '__main__':
     app.run(debug=True,)

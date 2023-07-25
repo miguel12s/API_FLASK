@@ -60,3 +60,13 @@ def getEstadoTutoria():
     cursor.execute(sql)
     estado = cursor.fetchall()
     return estado
+
+
+def existEmail(email:str):
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
+    sql=f'select count(*) from usuarios u  where u.correo="{email}" '
+    cursor.execute(sql)
+    existe = cursor.fetchone()[0]
+    return existe
