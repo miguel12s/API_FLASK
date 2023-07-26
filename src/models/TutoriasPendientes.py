@@ -11,3 +11,20 @@ class TutoriasPendientes():
         self.cursor.execute(sql)
         tutoriasPendientes= self.cursor.fetchall()
         return tutoriasPendientes
+    def listadoEstudiantes(self,id_tutoria):
+        sql=f"""select e.nombres,e.apellidos,e.numero_documento,e.programa from horario_tutorias ht
+join lista_estudiantes le on ht.id_tutoria=le.id_tutoria
+join estudiantes e on le.id_usuario=e.id_usuario 
+where le.id_tutoria={id_tutoria}"""
+        self.cursor.execute(sql)
+        data= self.cursor.fetchall()
+        listados=[]
+        for i in data:
+            listado={
+                "nombres":data[0][0],
+                "apellidos":data[0][1],
+                "identificacion":data[0][2],
+                "programa":data[0][3]
+            }
+            listados.append(listado)
+        return listados

@@ -10,22 +10,23 @@ class ModelosUpdate():
         self.cursor=bd.cursor()
 
 
-    def obtenerIdsTabla(self,id_tutoria):
+    def obtenerIdsTabla(self,id_tutoria,data):
       
-        sql=f"""SELECT h.id_programa,h.id_sede,h.id_salon,h.id_estado_tutoria,c.id_capacidad,m.id_materia,f.id_facultad   from horario_tutorias h 
-inner join programas p  on  h.id_programa=p.id_programa
-inner join sedes s on h.id_sede=s.id_sede
-inner join salones sa on h.id_salon=sa.id_salon
-inner join materias m on h.id_materia=m.id_materia
-inner join facultades f on h.id_facultad=f.id_facultad
-inner join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria
-inner join capacidades c on sa.id_capacidad=c.id_capacidad
+        sql=f"""SELECT
+  (SELECT id_programa FROM programas WHERE programa = "{data['programa']}") AS id_programa,
+  (SELECT id_sede FROM sedes WHERE sede = "{data['sede']}") AS id_sede,
+  (SELECT id_salon FROM salones WHERE salon = "{data['salon']}") AS id_salon,
+  (SELECT id_estado_tutoria FROM estados_tutorias WHERE estado_tutoria = "{data['estadoTutoria']}") AS id_estado_tutoria,
+  (SELECT id_capacidad FROM capacidades WHERE capacidad = "{data['capacidad']}") AS id_capacidad,
+  (SELECT id_materia FROM materias WHERE materia = "{data['materia']}") AS id_materia,
+  (SELECT id_facultad FROM facultades WHERE facultad = "{data['facultad']}") AS id_facultad;
 
 
-where h.id_tutoria='{id_tutoria}'"""
+ """
+        print(sql)
         self.cursor.execute(sql)
         data=self.cursor.fetchall()
-        print(data)
+        print('hi',data)
         return {
             "id_programa":data[0][0],
             "id_sede":data[0][1],
@@ -36,10 +37,11 @@ where h.id_tutoria='{id_tutoria}'"""
             "id_facultad":data[0][6]
         }
     def actualizarTutoria(self,horario:Horario):
+        
         sql=f"UPDATE horario_tutorias set id_programa='{horario.id_programa}',id_materia='{horario.id_materia}',id_sede='{horario.id_sede}',id_salon='{horario.id_salon}',id_estado_tutoria='{horario.id_estado_tutoria}',cupos='{horario.cupos}',tema='{horario.tema}',fecha='{horario.fecha}',hora_inicial='{horario.hora_inicio}',hora_final='{horario.hora_final}' WHERE id_tutoria={horario.id_tutoria}"
+        print(sql)
         self.cursor.execute(sql)
         self.bd.commit()
-        print('actualizacion exitosa')
         
     def obtenerCupos(self , id_tutoria):
         sql=f"select cupos from horario_tutorias where id_tutoria={id_tutoria}"

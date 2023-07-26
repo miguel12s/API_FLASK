@@ -14,6 +14,7 @@ from models import consultasHorario
 from models.consultasHorario import consultasHorario
 from models.modelosUpdate import ModelosUpdate
 from models.TutoriasPendientes import TutoriasPendientes
+from models.forgot import Forgot
 from utils.Security import Security
 from services.Mail import send_email
 import jwt
@@ -298,7 +299,6 @@ def mostrarHorario():
     
     ids=consultasHorario.obtenerIds(id_usuario)
     data=consultasHorario.mostrarHorario(ids)
-    print("tutorias",data)
     tutorias=consultasHorario.serialize(data)
    
     
@@ -416,12 +416,12 @@ def obtenerTutoria(id_tutoria):
 def actualizar(id_tutoria):
     headers=request.headers
     body=request.json
-    print(body)
+    print("body",body)
     payload=Security.verify_token(headers)
     id_usuario=payload['id_usuario']
     horario=ModelosUpdate(bd)
-    ids=horario.obtenerIdsTabla(id_tutoria)
-    print(ids)
+   
+    ids=horario.obtenerIdsTabla(id_tutoria,body)
     cupos=horario.obtenerCupos(id_tutoria)
     id_estado=horario.obtenerEstado(body['estadoTutoria'])
     
@@ -457,16 +457,36 @@ def forgot():
     email=data['email']
     if(email!=""):
         number=existEmail(email)
+        print(number)
         existe=True if number==1 else False
         if(existe):
+             forgot=Forgot(bd)
+             password=forgot.getPassword()
+             print(password)
              subject = 'Cambio de contraseña'
-             body = 'la contraseña es miguel123'
+             body = f'la contraseña es {password}'
              send_email(subject,body,email)
+             passwordHash=forgot.generatePasswordHash(password)
+             print(password,passwordHash)
+             forgot.updatePassword(email,passwordHash) 
+           
+        
              return jsonify({"success":"la contraseña ha sido cambiada"})
-        return jsonify('el correo no existe en el sistema')
+        return jsonify({"message":'el correo no existe en el sistema'})
     return jsonify({"message":"correo invalido"})
 
+@app.route('/listado/<id_tutoria>')
 
+
+
+def listado(id_tutoria):
+    headers=request.headers
+    logout=Security.verify_token(headers)
+    tutorias=TutoriasPendientes(bd)
+    listado= tutorias.listadoEstudiantes(id_tutoria)
+    return jsonify({"estudiante":listado})
+    # if not logout:    
+    #     return jsonify({"message":"error"})
 
 if __name__ == '__main__':
     app.run(debug=True,)
