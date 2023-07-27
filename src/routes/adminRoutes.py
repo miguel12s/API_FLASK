@@ -55,7 +55,10 @@ def setFacultad():
 
 def agregarPrograma():
     body=request.json
-    modelo.agregarPrograma(body['programa'])
+    try:
+      modelo.agregarPrograma(body['programa'])
+    except:
+        return jsonify({"error":"El programa que desea insertar se encuenta registrado en el programa"})
     return jsonify("el programa ha sido agregada con exito")
 @admin.route('obtenerProgramas',methods=['get'])
 
@@ -85,10 +88,10 @@ def getProgramaForId(id_programa):
 
 def setPrograma():
     data=request.json
-    print(data)
-   
-    modelo.agregarPrograma(data['programa'])
-   
+    try:
+      modelo.agregarPrograma(data['programa'])
+    except:
+        return jsonify({"error":"El programa que desea insertar se encuenta registrado en el programa"})
         
         
     return jsonify({"data":" El programa ha sido agregado con exito"})
