@@ -1,6 +1,6 @@
 import os
 from werkzeug.utils import secure_filename
-from flask import Flask, jsonify, request,make_response,send_from_directory
+from flask import Flask, jsonify, request,send_from_directory
 from flask_cors import CORS
 from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail
 from models.estudiante import Estudiante
@@ -17,11 +17,12 @@ from models.TutoriasPendientes import TutoriasPendientes
 from models.forgot import Forgot
 from utils.Security import Security
 from services.Mail import send_email
-import jwt
-import json
+from routes.adminRoutes import admin
+
 
 
 app = Flask(__name__)
+app.register_blueprint(admin, url_prefix='/admin')
 
 UPLOAD_FOLDER ='src/static/uploads'
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
@@ -33,7 +34,6 @@ bd=getConecction()
 ALLOWED_EXTENSIONS = set(['png', 'jpg', 'jpeg', 'gif'])
 
 def allowed_file(filename):
-    print("hola")
     return '.' in filename and filename.rsplit('.', 1)[1].lower()
 
 @app.route("/upload",methods=["POST"])
@@ -475,18 +475,22 @@ def forgot():
         return jsonify({"message":'el correo no existe en el sistema'})
     return jsonify({"message":"correo invalido"})
 
+
+
+
 @app.route('/listado/<id_tutoria>')
 
 
 
 def listado(id_tutoria):
-    headers=request.headers
-    logout=Security.verify_token(headers)
-    tutorias=TutoriasPendientes(bd)
-    listado= tutorias.listadoEstudiantes(id_tutoria)
+    listado= TutoriasPendientes.listadoEstudiantes(id_tutoria)
+    
     return jsonify({"estudiante":listado})
     # if not logout:    
     #     return jsonify({"message":"error"})
+
+
+
 
 if __name__ == '__main__':
     app.run(debug=True,)
