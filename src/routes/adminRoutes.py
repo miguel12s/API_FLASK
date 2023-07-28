@@ -138,6 +138,50 @@ def getMateriaForId(id_materia):
 
 
 
+@admin.route('/getSedes')
+
+def getSedes():
+    sedes=modelo.getSedes()
+    return jsonify({"data":sedes})
+
+@admin.route('/getDataForIdSede/<id_sede>')
+
+def getDataForIdSede(id_sede):
+    sede=modelo.obtenerSedePorId(id_sede)
+    return jsonify({"data":sede})
+
+@admin.route('setSede',methods=['post'])
+def setSede():
+    body=request.json
+    try:
+      modelo.agregarSede(body['sede'])
+    except:
+        return jsonify({"error":"la sede ya existe en el programa"})
+    return jsonify({"data":"la sede ha sido agregada con exito"})
+
+@admin.route('actualizarSede',methods=['post'])
+def actualizarSede():
+     data=request.json
+     try:
+      modelo.actualizarSede(data)
+     except:
+      return jsonify({"error":"el nombre de la sede ya se encuentra registrado en el programa"})
+     return jsonify({"success":"la sede ha sido actualizada"})
 
 
+@admin.route('getSalones')
+
+
+def getSalones():
+    salones=modelo.getSalones()
+    print(salones)
+    return jsonify({"data":salones})
+
+
+
+@admin.route('/getSalonForId/<id_salon>',methods=['get'])
+
+def getSalonForId(id_salon):
+      salon=modelo.obtenerSalonPorId(id_salon)
+      return jsonify({"data":salon})
 
