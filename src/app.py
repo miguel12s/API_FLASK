@@ -2,7 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,send_from_directory
 from flask_cors import CORS
-from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail
+from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail,getFacultades
 from models.estudiante import Estudiante
 from models.user import User
 from databases.conexion import getConecction
@@ -83,6 +83,8 @@ def salon():
     salon = getSalon()
     return jsonify(salon)
 
+
+
 @app.route('/estadoTutoria')
 
 
@@ -112,6 +114,13 @@ def sedes():
 def programas():
     programas = getPrograms()
     return jsonify(programas)
+@app.route('/facultades')
+def facultades():
+    facultades = getFacultades()
+    print(facultades)
+    return jsonify(facultades)
+
+
 
 
 
@@ -483,8 +492,7 @@ def forgot():
 
 
 def listado(id_tutoria):
-    listado= TutoriasPendientes.listadoEstudiantes(id_tutoria)
-    
+    listado= TutoriasPendientes.listadoEstudiantes(id_tutoria) 
     return jsonify({"estudiante":listado})
     # if not logout:    
     #     return jsonify({"message":"error"})

@@ -185,3 +185,222 @@ def getSalonForId(id_salon):
       salon=modelo.obtenerSalonPorId(id_salon)
       return jsonify({"data":salon})
 
+@admin.route('/setSalon', methods=['POST'])
+
+def setSalon():
+    salon=request.json
+    try:
+      modelo.agregarSalon(salon)
+    except:
+        return jsonify({"error":"la sede ya existe en el programa"})
+    return jsonify({"data":"la sede ha sido agregada con exito"})
+
+
+
+@admin.route('/getRoles')
+
+def roles():
+    roles=modelo.getRoles()
+    return jsonify({"data":roles})
+
+
+
+@admin.route('/getRolForId/<id_rol>')
+def getRolForId(id_rol):
+    roles=modelo.obtenerRolPorId(id_rol)
+    return jsonify({"data":roles})
+@admin.route('setRol',methods=['post'])
+
+
+def setRol():
+   roles=request.json
+   try:
+      modelo.setRol(roles)
+   except:
+        return jsonify({"error":"el rol ya existe en el programa"})
+   return jsonify({"data":"el rol ha sido agregada con exito"})
+
+
+
+
+
+@admin.route('actualizarRol',methods=['post'])
+def actualizarRol():
+     data=request.json
+     try:
+      modelo.actualizarRol(data)
+     except:
+      return jsonify({"error":"el nombre del rol  ya se encuentra registrado en el programa"})
+     return jsonify({"success":"el rol ha sido actualizada"})
+
+
+
+
+
+@admin.route('/getTipo')
+
+def getTipo():
+    tipo=modelo.getTipo()
+    return jsonify({"data":tipo})
+
+
+
+@admin.route('/getTipoForId/<id_tipo>')
+def getTipoForId(id_tipo):
+    tipos=modelo.obtenerTipoPorId(id_tipo)
+    return jsonify({"data":tipos})
+@admin.route('setTipo',methods=['post'])
+
+
+def setTipo():
+   tipos=request.json
+   try:
+      modelo.setTipo(tipos)
+   except:
+        return jsonify({"error":"el tipo de documento ya existe en el programa"})
+   return jsonify({"data":"el tipo de documento ha sido agregada con exito"})
+
+
+
+
+
+@admin.route('actualizarTipo',methods=['post'])
+def actualizarTipo():
+     data=request.json
+     try:
+      modelo.actualizarTipo(data)
+     except:
+      return jsonify({"error":"el tipo de documento ya se encuentra registrado en el programa"})
+     return jsonify({"success":"el tipo de documento ha sido actualizada"})
+
+
+
+
+
+
+@admin.route('/getEstado')
+
+def getEstado():
+    estado=modelo.getEstado()
+    return jsonify({"data":estado})
+
+
+
+@admin.route('/getEstadoForId/<id_estado>')
+def getEstadoForId(id_estado):
+    estado=modelo.obtenerEstadoPorId(id_estado)
+    return jsonify({"data":estado})
+@admin.route('setEstado',methods=['post'])
+
+
+def setEstado():
+   estados=request.json
+   try:
+      modelo.setEstado(estados)
+   except:
+        return jsonify({"error":"el estado ya existe en el programa"})
+   return jsonify({"data":"el estado ha sido agregado con exito"})
+
+
+
+
+
+@admin.route('actualizarEstado',methods=['post'])
+def actualizarEstado():
+     data=request.json
+     try:
+      modelo.actualizarEstado(data)
+     except Exception as e:
+      print(e)
+      return jsonify({"error":"el estado ya se encuentra registrado en el programa"})
+     return jsonify({"success":"el estado ha sido actualizada"})
+
+
+
+
+
+
+@admin.route('/getEstadoTutoria')
+
+def getEstadoTutoria():
+    estadoTutoria=modelo.getEstadoTutoria()
+    return jsonify({"data":estadoTutoria})
+
+
+
+@admin.route('/getEstadoTutoriaForId/<id_estado_tutoria>')
+def getEstadoTutoriaForId(id_estado_tutoria):
+    estado=modelo.obtenerEstadoTutoriaPorId(id_estado_tutoria)
+    return jsonify({"data":estado})
+@admin.route('setEstadoTutoria',methods=['post'])
+
+
+def setEstadoTutoria():
+   estados=request.json
+   try:
+      modelo.setEstadoTutoria(estados)
+   except:
+        return jsonify({"error":"el estado de la tutoria ya existe en el programa"})
+   return jsonify({"data":"el estado de la tutoria ha sido agregado con exito"})
+
+
+
+
+
+@admin.route('actualizarEstadoTutoria',methods=['post'])
+def actualizarEstadoTutoria():
+     data=request.json
+     try:
+      modelo.actualizarEstadoTutoria(data)
+     except Exception as e:
+      print(e)
+      return jsonify({"error":"el estado de la tutoria  ya se encuentra registrado en el programa"})
+     return jsonify({"success":"el estado  de la tutoria ha sido actualizada"})
+
+
+
+
+
+@admin.route('/getCapacidad')
+
+def getCapacidad():
+    capacidad=modelo.getCapacidad()
+    return jsonify({"data":capacidad})
+
+
+
+@admin.route('/getCapacidadForId/<id_capacidad>')
+def getCapacidadForId(id_capacidad):
+    capacidad=modelo.obtenerCapacidadPorId(id_capacidad)
+    return jsonify({"data":capacidad})
+@admin.route('setCapacidad',methods=['post'])
+
+
+def setCapacidad():
+   estados=request.json
+   try:
+      modelo.setCapacidad(estados)
+   except:
+        return jsonify({"error":"el estado de la tutoria ya existe en el programa"})
+   return jsonify({"data":"el estado de la tutoria ha sido agregado con exito"})
+
+
+
+
+
+@admin.route('actualizarCapacidad',methods=['post'])
+def actualizarCapacidad():
+     data=request.json
+     try:
+      modelo.actualizarCapacidad(data)
+     except Exception as e:
+      print(e)
+      return jsonify({"error":"el estado de la tutoria  ya se encuentra registrado en el programa"})
+     return jsonify({"success":"el estado  de la tutoria ha sido actualizada"})
+
+
+
+
+
+
+

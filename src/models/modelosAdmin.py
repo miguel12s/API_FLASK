@@ -163,6 +163,20 @@ class ModelosAdmin():
             salones.append(salon)
         return salones
     
+    def getRoles(self):
+        sql="select * from roles"
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        roles=[]
+        for i in data:
+            rol={
+                "id_rol":i[0],
+                "rol":i[1],
+                
+            }
+            roles.append(rol)
+        return roles
+    
 
 
     def obtenerSalonPorId(self,id_salon:str):
@@ -177,4 +191,176 @@ join sedes se on s.id_sede=se.id_sede where s.id_salon={id_salon} """
                 "sede":data[0][2],
                 "id_salon":data[0][3]
             }
+    
+    # def agregarSalon(self,body):
+    #     sql="insert into sal"
            
+    def obtenerRolPorId(self,id_rol):
+        sql=f"""select * from roles where id_rol={id_rol} """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        return {
+                "rol":data[0][1],
+                "id_rol":data[0][0]
+            }
+    def setRol(self,rol):
+        print(rol)
+        sql=f"insert into roles (rol) values ('{rol['rol']}')"
+        print(sql)
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+    def actualizarRol(self,roles):
+        sql=f"update roles set rol='{roles['rol']}' where id_rol={roles['id_rol']}"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+
+
+
+
+
+    def obtenerTipoPorId(self,id_tipo:str):
+        sql=f"""select * from tipos_documento where id_tipo_documento={id_tipo} """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        return {
+               "id_tipo_documento":data[0][0],
+               "tipo_documento":data[0][1]
+            }
+    
+    
+    def getTipo(self):
+        sql="select * from tipos_documento"
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        tipo_documento=[]
+        for i in data:
+            tipo={
+                "id_tipo_documento":i[0],
+                "tipo_documento":i[1],
+                
+            }
+            tipo_documento.append(tipo)
+        return tipo_documento
+    
+    def setTipo(self,tipo):
+        
+        sql=f"insert into tipos_documento (tipo_documento) values ('{tipo['tipo_documento']}')"
+        print(sql)
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+    def actualizarTipo(self,data):
+        sql=f"update tipos_documento set tipo_documento='{data['tipo_documento']}' where id_tipo_documento={data['id_tipo_documento']}"
+        self.cursor.execute(sql)
+        self.bd.commit()   
+    
+    def getEstado(self):
+        sql="select * from estados"
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        estados=[]
+        for i in data:
+            estado={
+                "id_estado":i[0],
+                "estado":i[1]
+            }
+            estados.append(estado)
+        return estados
+
+
+        
+    def obtenerEstadoPorId(self,id_estado:str):
+        sql=f"""select * from estados where id_estado={id_estado} """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        return {
+               "id_estado":data[0][0],
+               "estado":data[0][1]
+            }
+    def setEstado(self,estados):
+        
+        sql=f"insert into estados (estado) values ('{estados['estado']}')"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+    def actualizarEstado(self,estado):
+        print(estado)
+        sql=f"update estados set estado='{estado['estado']}' where id_estado={estado['id_estado']}"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+
+
+
+    def getEstadoTutoria(self):
+        sql="select * from estados_tutorias"
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        estados=[]
+        for i in data:
+            estado={
+                "id_estado_tutoria":i[0],
+                "estado_tutoria":i[1]
+            }
+            estados.append(estado)
+        return estados
+
+
+        
+    def obtenerEstadoTutoriaPorId(self,id_estado_tutoria:str):
+        sql=f"""select * from estados_tutorias where id_estado_tutoria={id_estado_tutoria} """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        return {
+               "id_estado_tutoria":data[0][0],
+               "estado_tutoria":data[0][1]
+            }
+    def setEstadoTutoria(self,estados):
+        
+        sql=f"insert into estados_tutorias (estado_tutoria) values ('{estados['estado_tutoria']}')"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+    def actualizarEstadoTutoria(self,estado):
+        print(estado)
+        sql=f"update estados_tutorias set estado_tutoria='{estado['estado_tutoria']}' where id_estado_tutoria={estado['id_estado_tutoria']}"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+
+    def getCapacidad(self):
+        sql="select * from capacidades"
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        capacidades=[]
+        for i in data:
+            capacidad={
+                "id_capacidad":i[0],
+                "capacidad":i[1]
+            }
+            capacidades.append(capacidad)
+        return capacidades
+
+
+        
+    def obtenerCapacidadPorId(self,id_capacidad:str):
+        sql=f"""select * from capacidades where id_capacidad={id_capacidad} """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        return {
+               "id_capacidad":data[0][0],
+               "capacidad":data[0][1]
+            }
+    def setCapacidad(self,capacidad):
+        
+        sql=f"insert into capacidades (capacidad) values ('{capacidad['capacidad']}')"
+        self.cursor.execute(sql)
+        self.bd.commit()
+
+    def actualizarCapacidad(self,capacidad):
+        print(capacidad)
+        sql=f"update capacidades set capacidad='{capacidad['capacidad']}' where id_capacidad={capacidad['id_capacidad']}"
+        self.cursor.execute(sql)
+        self.bd.commit()    

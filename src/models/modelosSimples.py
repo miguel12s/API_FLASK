@@ -70,3 +70,12 @@ def existEmail(email:str):
     cursor.execute(sql)
     existe = cursor.fetchone()[0]
     return existe
+
+def getFacultades():
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
+    sql="select facultad from facultades"
+    cursor.execute(sql)
+    estado = cursor.fetchall()
+    return estado
