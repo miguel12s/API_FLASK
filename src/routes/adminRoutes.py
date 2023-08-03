@@ -2,9 +2,12 @@ from flask import Blueprint, jsonify
 from flask import request
 from models.modelosAdmin import ModelosAdmin
 from databases.conexion import getConecction
+from models.modelosUpdate import ModelosUpdate
 admin=Blueprint("admin",__name__)
 bd=getConecction()
 modelo=ModelosAdmin(bd)
+
+
 
 @admin.route('/agregarFacultad',methods=['post'])
 
@@ -64,6 +67,9 @@ def agregarPrograma():
 
 def obtenerProgramas():
        data=modelo.obtenerProgramas()
+        
+       
+
        return jsonify({"data":data})
 
 @admin.route('/actualizarPrograma',methods=['post'])
@@ -169,12 +175,11 @@ def actualizarSede():
      return jsonify({"success":"la sede ha sido actualizada"})
 
 
-@admin.route('getSalones')
+@admin.route('getSalones',methods=['get'])
 
 
 def getSalones():
     salones=modelo.getSalones()
-    print(salones)
     return jsonify({"data":salones})
 
 
@@ -190,12 +195,27 @@ def getSalonForId(id_salon):
 def setSalon():
     salon=request.json
     try:
-      modelo.agregarSalon(salon)
-    except:
+      ids=modelo.obtenerIds(salon)
+      print(ids)
+      modelo.agregarSalon(ids,salon['salon'])
+    except Exception as e:
+        print(e)
         return jsonify({"error":"la sede ya existe en el programa"})
     return jsonify({"data":"la sede ha sido agregada con exito"})
 
+@admin.route('actualizarSalon',methods=['post'])
 
+
+def actualizarSalon():
+   body=request.json
+   try:
+      ids=modelo.obtenerIds(body)
+      modelo.actualizarSalon(ids,body)
+   except Exception as e:
+      
+      print(e)
+      return jsonify({"error":"el salon ya existe en el sistema"})
+   return jsonify({"success":"el salon ha sido actualizado"})
 
 @admin.route('/getRoles')
 
@@ -388,7 +408,7 @@ def setCapacidad():
 
 
 
-@admin.route('actualizarCapacidad',methods=['post'])
+@admin.route('/actualizarCapacidad',methods=['post'])
 def actualizarCapacidad():
      data=request.json
      try:
@@ -398,9 +418,46 @@ def actualizarCapacidad():
       return jsonify({"error":"el estado de la tutoria  ya se encuentra registrado en el programa"})
      return jsonify({"success":"el estado  de la tutoria ha sido actualizada"})
 
+@admin.route('/obtenerHorarioDocente',methods=['get'])
+
+def obtenerHorario():
+   data=modelo.getHorario()
+
+   return jsonify({"data":data})
+
+@admin.route('/actualizarHorarioAdmin/<id_tutoria>',methods=['POST'])
+
+def actualizarHorarioAdmin(id_tutoria):
+
+    body=request.json
+    print("body",body)
+    ids=modelo.obtenerIdsTabla(body)
+    print(ids)
+    modelo.actualizarTutoria(body,ids)
+    return jsonify({"data":"actualizado con exito"})
 
 
+@admin.route('/getDocentes')
+
+def getDocente():
+   docentes=modelo.getDocente()
+   return jsonify({"data":docentes})
+
+@admin.post('/crearHorario')
+
+def crearHorario():
+   body=request.json
+   
+   print(body)
+   ids=modelo.obtenerIdsTabla(body)
+   print(ids)
+   modelo.crearHorario(body,ids)
+   return jsonify({"message":"el horario ha sido añadido con exito"})
 
 
+@admin.route('/obtenerHorarioTerminado',methods=['get'])
 
+def obtenerHorarioTerminado():
+   data=modelo.getHorarioFinished()
 
+   return jsonify({"data":data})

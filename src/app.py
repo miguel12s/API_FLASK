@@ -430,7 +430,7 @@ def actualizar(id_tutoria):
     id_usuario=payload['id_usuario']
     horario=ModelosUpdate(bd)
    
-    ids=horario.obtenerIdsTabla(id_tutoria,body)
+    ids=horario.obtenerIdsTabla(body)
     cupos=horario.obtenerCupos(id_tutoria)
     id_estado=horario.obtenerEstado(body['estadoTutoria'])
     

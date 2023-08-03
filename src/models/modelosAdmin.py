@@ -1,5 +1,7 @@
 import mysql.connector
 
+from databases.conexion import getConecction
+
 
 
 class ModelosAdmin():
@@ -12,7 +14,7 @@ class ModelosAdmin():
         self.cursor.execute(sql)
         self.bd.commit()
     def obtenerFacultades(self):
-        sql=f"select  * from facultades"
+        sql=f" SELECT `id_facultad`, `facultad` FROM `facultades` WHERE 1"
         self.cursor.execute(sql)
         data=self.cursor.fetchall()
         lista=[]
@@ -51,9 +53,11 @@ class ModelosAdmin():
         self.cursor.execute(sql)
         self.bd.commit()
     def obtenerProgramas(self):
-        sql=f"select  * from programas"
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"select * from programas"
+        cursor.execute(sql)
+        data=cursor.fetchall()
         lista=[]
         for i in data:
             objeto={
@@ -91,9 +95,11 @@ class ModelosAdmin():
         self.cursor.execute(sql)
         self.bd.commit()
     def obtenerMaterias(self):
-        sql=f"select  * from materias"
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"SELECT `id_materia`, `materia` FROM `materias` WHERE 1"
+        cursor.execute(sql)
+        data=cursor.fetchall()
         lista=[]
         for i in data:
             objeto={
@@ -118,9 +124,11 @@ class ModelosAdmin():
             "materia":data[0][1]
         }
     def getSedes(self):
-        sql=f"select * from sedes "
-        self.cursor.execute(sql)
-        sedes=self.cursor.fetchall()
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"SELECT `id_sede`, `sede` FROM `sedes` WHERE 1"
+        cursor.execute(sql)
+        sedes=cursor.fetchall()
         listaSedes=[]
         for i in sedes:
             sede={
@@ -149,9 +157,10 @@ class ModelosAdmin():
          self.bd.commit()
 
     def getSalones(self):
-        sql="select c.capacidad,s.salon,se.sede,s.id_salon from salones s join capacidades c on s.id_capacidad=c.id_capacidad join sedes se on s.id_sede=se.id_sede"
+        sql="SELECT c.capacidad,s.salon,se.sede,s.id_salon FROM salones s join capacidades c on s.id_capacidad=c.id_capacidad join sedes se on s.id_sede=se.id_sede"
         self.cursor.execute(sql)
         data=self.cursor.fetchall()
+        print(data)
         salones=[]
         for i in data:
             salon={
@@ -363,4 +372,172 @@ join sedes se on s.id_sede=se.id_sede where s.id_salon={id_salon} """
         print(capacidad)
         sql=f"update capacidades set capacidad='{capacidad['capacidad']}' where id_capacidad={capacidad['id_capacidad']}"
         self.cursor.execute(sql)
-        self.bd.commit()    
+        self.bd.commit()   
+
+
+
+    def obtenerIds(self,salon):
+        print(salon)
+        sql=f"""
+SELECT c.id_capacidad,se.id_sede from capacidades c
+join sedes se on se.id_sede=se.id_sede
+where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
+        print(sql)
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        print(data)
+        return {
+            "id_capacidad":data[0][0],
+            "id_sede":data[0][1],
+        }
+    def agregarSalon(self,ids,salon):
+        
+        sql=f"INSERT INTO salones( id_capacidad, salon, id_sede) VALUES ({ids['id_capacidad']},'{salon}',{ids['id_sede']})"
+        self.cursor.execute(sql)
+        self.bd.commit() 
+
+
+    def actualizarSalon(self,ids,salon):
+        
+        sql=f"""update salones set id_capacidad={ids['id_capacidad']}, salon='{salon['salon']}',id_sede={ids['id_sede']} where id_salon={salon['id_salon']}"""
+        print(sql)
+        self.cursor.execute(sql)
+        self.bd.commit()
+    
+    def getHorario(self):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql="""
+        select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on h.id_salon=capa.id_capacidad where et.id_estado_tutoria=1"""
+        cursor.execute(sql)
+        data=cursor.fetchall()
+        print('horario',data)
+        horarios=[]
+      
+        for i in data:
+          horario={
+              
+"cupos":i[0],	
+"tema":i[1],	
+"fecha":i[2],	
+"hora_inicial":i[3],	
+"hora_final":i[4],	
+"id_tutoria":i[5],	
+"facultad":i[6],	
+"programa":i[7],	
+"materia":i[8],	
+"sede":i[9],	
+"id_estado_tutoria":i[10],	
+"nombres":i[11],	
+"apellidos":i[12],	
+"salon":i[13],	
+"capacidad":i[14],	
+"id_tutoria":i[15],
+"id_docente":i[16]
+          }
+          horarios.append(horario)
+        print(horarios)
+        return horarios
+    
+    def obtenerIdsTabla(self,data):
+       
+        sql=f"""SELECT
+  (SELECT id_programa FROM programas WHERE programa = "{data['programa']}") AS id_programa,
+  (SELECT id_sede FROM sedes WHERE sede = "{data['sede']}") AS id_sede,
+  (SELECT id_salon FROM salones WHERE salon = "{data['salon']}") AS id_salon,
+   (SELECT id_usuario FROM docentes WHERE nombres = "{data['docente']}") AS id_salon,
+  (SELECT id_capacidad FROM capacidades WHERE capacidad = {data['capacidad']}) AS id_capacidad,
+  (SELECT id_materia FROM materias WHERE materia = "{data['materia']}") AS id_materia,
+  (SELECT id_facultad FROM facultades WHERE facultad = "{data['facultad']}") AS id_facultad;
+
+
+ """
+        
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        print(data)
+        return {
+            "id_programa":data[0][0],
+            "id_sede":data[0][1],
+            "id_salon":data[0][2],
+            "id_capacidad":data[0][3],
+            "id_usuario":data[0][4],
+            "id_materia":data[0][5],
+            "id_facultad":data[0][6]
+        }
+    def actualizarTutoria(self,horario,ids):
+        id_docente=horario['docente'].split('-')[1]
+        print(horario['id_tutoria'])
+        sql=f"UPDATE horario_tutorias set id_programa='{ids['id_programa']}',id_materia='{ids['id_materia']}',id_sede='{ids['id_sede']}',id_salon='{ids['id_salon']}',tema='{horario['tema']}',fecha='{horario['fecha']}',hora_inicial='{horario['horaInicio']}',hora_final='{horario['horaFin']}',id_facultad='{ids['id_facultad']}',id_usuario='{id_docente}' WHERE id_tutoria={horario['id_tutoria']}"
+        print(sql)
+        self.cursor.execute(sql)
+        self.bd.commit()
+        
+    def obtenerCupos(self , id_tutoria):
+        sql=f"select cupos from horario_tutorias where id_tutoria={id_tutoria}"
+        self.cursor.execute(sql)
+        cupos=self.cursor.fetchone()[0]
+        return cupos
+    def obtenerEstado(self,estado):
+        sql=f"select id_estado_tutoria from estados_tutorias where estado_tutoria='{estado}'"
+        self.cursor.execute(sql)
+        cupos=self.cursor.fetchone()[0]
+        return cupos
+    def getDocente(self):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql="SELECT nombres,apellidos,id_usuario FROM `docentes` WHERE 1"
+        cursor.execute(sql)
+        data=cursor.fetchall()
+        docentes=[]
+        for i in data:
+            docente={
+                "nombres":f"{i[0]} {i[1]}",
+                "id_docente":i[2]
+            }
+            docentes.append(docente)
+        print(docentes)
+        return docentes
+    def crearHorario(self,horario,ids):
+        id_usuario=horario['docente'].split('-')[1]
+        
+        sql=f"insert into horario_tutorias (id_tutoria, id_facultad, id_programa, id_materia, id_sede, id_salon, id_usuario, id_estado_tutoria, cupos, tema, fecha, hora_inicial, hora_final, fecha_generacion_tutoria) VALUES ('{0}','{ids['id_facultad']}','{ids['id_programa']}','{ids['id_materia']}','{ids['id_sede']}','{ids['id_salon']}','{id_usuario}','{1}','{horario['capacidad']}','{horario['tema']}','{horario['tema']}','{horario['horaInicio']}','{horario['horaFin']}','{horario['fecha']}')"
+        self.cursor.execute(sql)
+        self.bd.commit()
+    
+
+
+    def getHorarioFinished(self):
+            bd=getConecction()
+            cursor=bd.cursor()
+            sql="""
+            select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario,h.fecha_generacion_tutoria from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on h.id_salon=capa.id_capacidad where et.id_estado_tutoria=2"""
+            cursor.execute(sql)
+            data=cursor.fetchall()
+            horarios=[]
+        
+            for i in data:
+                horario={
+                    
+        "cupos":i[0],	
+        "tema":i[1],	
+        "fecha":i[2],	
+        "hora_inicial":i[3],	
+        "hora_final":i[4],	
+        "id_tutoria":i[5],	
+        "facultad":i[6],	
+        "programa":i[7],	
+        "materia":i[8],	
+        "sede":i[9],	
+        "id_estado_tutoria":i[10],	
+        "nombres":i[11],	
+        "apellidos":i[12],	
+        "salon":i[13],	
+        "capacidad":i[14],	
+        "id_tutoria":i[15],
+        "id_docente":i[16],
+        "fecha_generacion_tutoria":i[17]
+                }
+                
+                horarios.append(horario)
+            return horarios

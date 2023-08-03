@@ -79,6 +79,9 @@ class consultasHorario():
               "estado_tutoria":i[0][10],
                        "salon":i[0][11],
                        "id_tutoria":i[0][12],
-                       "capacidad":i[0][13]
+                       "capacidad":i[0][13],
+                       "nombres":i[0][14],
+                       "apellidos":i[0][15],
+                       "id_docente":i[0][16],
                        
          }

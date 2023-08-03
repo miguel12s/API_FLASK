@@ -10,7 +10,7 @@ class ModelosUpdate():
         self.cursor=bd.cursor()
 
 
-    def obtenerIdsTabla(self,id_tutoria,data):
+    def obtenerIdsTabla(self,data):
       
         sql=f"""SELECT
   (SELECT id_programa FROM programas WHERE programa = "{data['programa']}") AS id_programa,
