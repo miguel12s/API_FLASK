@@ -350,6 +350,7 @@ def mostrarHorariosId(id):
     headers=request.headers
     payload=Security.verify_token(headers)
     horario=getHorarioForId(id)
+    print(horario)
     horarioTutorias=consultasHorario.serializeId(horario)
     print(horarioTutorias)
     return jsonify({"data":horarioTutorias})

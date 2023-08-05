@@ -14,9 +14,11 @@ class ModelosAdmin():
         self.cursor.execute(sql)
         self.bd.commit()
     def obtenerFacultades(self):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f" SELECT `id_facultad`, `facultad` FROM `facultades` WHERE 1"
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         lista=[]
         for i in data:
             objeto={
@@ -413,7 +415,7 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
         bd=getConecction()
         cursor=bd.cursor()
         sql="""
-        select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on h.id_salon=capa.id_capacidad where et.id_estado_tutoria=1"""
+        select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on sal.id_capacidad=capa.id_capacidad where et.id_estado_tutoria=1"""
         cursor.execute(sql)
         data=cursor.fetchall()
         print('horario',data)
@@ -606,5 +608,57 @@ where es.id_usuario={id_usuario}
         self.bd.commit()
     def actualizarEstudiante(self,id_estudiante,data):
         sql=f"UPDATE `estudiantes` SET `nombres`='{data['nombres']}',`apellidos`='{data['apellidos']}',`tipo_documento`='{data['tipo_documento']}',`numero_documento`='{data['numero_documento']}',`celular`='{data['celular']}',`facultad`='{data['facultad']}',`programa`='{data['programa']}',`correo`='{data['correo']}' WHERE id_usuario={id_estudiante}"
+        self.cursor.execute(sql)
+        self.bd.commit()
+    def getDocentess(self):
+        sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario FROM docentes es 
+join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)"""
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        print(data)
+        docentes=[]
+        for i in data:
+            docente={
+                "nombres":i[0],
+                "facultad":i[3],
+                "celular":i[1],
+                "correo":i[2],
+                "facultad":i[3],
+                "id_estado":i[4],
+                "id_usuario":i[5],
+                
+            }
+            docentes.append(docente)
+        return docentes
+    def getDocenteFull(self,id_usuario):
+        sql=f"""
+SELECT es.nombres, 
+        es.apellidos,es.tipo_documento,es.numero_documento,es.facultad,
+        es.celular,es.correo,u.id_estado,u.id_usuario,e.estado FROM docentes es 
+join usuarios u  on es.id_usuario=u.id_usuario
+join estados e on e.id_estado=u.id_estado
+where es.id_usuario={id_usuario}
+
+  ORDER BY (es.nombres)
+"""
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        print(data)
+        return {
+            "nombres":data[0][0],
+            "apellidos":data[0][1],
+            "tipo_documento":data[0][2],
+            "numero_documento":data[0][3],
+            "facultad":data[0][4],
+            "celular":data[0][5],
+            "correo":data[0][6],
+            "id_estado":data[0][7],
+            "id_usuario":data[0][8],
+            "estado":data[0][9]
+        }
+    def actualizarDocente(self,id_estudiante,data):
+        sql=f"""
+UPDATE `docentes` SET `nombres`='{data['nombres']}',`apellidos`='{data['apellidos']}',`tipo_documento`='{data['tipo_documento']}',`numero_documento`='{data['numero_documento']}',`celular`='{data['celular']}',`facultad`='{data['facultad']}',`correo`='{data['correo']}' WHERE id_usuario={id_estudiante}
+"""
         self.cursor.execute(sql)
         self.bd.commit()

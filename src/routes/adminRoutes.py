@@ -437,7 +437,7 @@ def actualizarHorarioAdmin(id_tutoria):
     return jsonify({"data":"actualizado con exito"})
 
 
-@admin.route('/getDocentes')
+@admin.route('/getDocente')
 
 def getDocente():
    docentes=modelo.getDocente()
@@ -488,10 +488,33 @@ def getEstudiante(id_usuario):
 
 def actualizarEstudiante(id_estudiante):
    estudiante=request.json
-   modelo.actualizarUsuario
    id_estado=modelo.getEstadoForEstado(estudiante['estado'])
    modelo.actualizarUsuario(id_estudiante,id_estado,estudiante['correo'])
    modelo.actualizarEstudiante(id_estudiante,estudiante) 
 
 
    return jsonify({"success":"el estudiante ha sido actualizado"})
+@admin.route('/getDocentesFull')
+
+def getDocentes():
+   docentes=modelo.getDocentess()
+   print(docentes)
+   return jsonify({"data":docentes})
+
+## obtener un solo docente para el actualizar con su id_usuario
+
+@admin.route('/getDocente/<id_usuario>')
+
+def getDocenteFull(id_usuario):
+   docente=modelo.getDocenteFull(id_usuario)
+   return jsonify({"data":docente})
+
+@admin.post('/actualizarDocente/<id_usuario>')
+
+def actualizarDocente(id_usuario):
+   docente=request.json
+   id_estado=modelo.getEstadoForEstado(docente['estado'])
+   modelo.actualizarUsuario(id_usuario,id_estado,docente['correo'])
+   modelo.actualizarDocente(id_usuario,docente) 
+   return jsonify({"message":"el docente ha sido actualizado"})
+
