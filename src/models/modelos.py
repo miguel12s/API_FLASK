@@ -61,7 +61,7 @@ def updatePassword(id,password):
 
 def saveFoto(img,id_user):
        mybd=getConecction()
-       cursor=mybd.cursor()
+       cursor=mybd.cursor() 
        sql=f"update estudiantes set foto='{img}' where id_usuario='{id_user}'"
        cursor.execute(sql)
        mybd.commit()

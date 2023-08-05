@@ -53,3 +53,7 @@ class ModelosUpdate():
         self.cursor.execute(sql)
         cupos=self.cursor.fetchone()[0]
         return cupos
+    def actualizarEstado(self,id_estudiante):
+        sql=f"update usuarios set id_estado=2 where id_usuario={id_estudiante} "
+        self.cursor.execute(sql)
+        self.bd.commit()

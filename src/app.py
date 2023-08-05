@@ -137,7 +137,8 @@ def registro():
         usuario = User(None,'1', '1', data['correo'], data['contraseña'])
         id = User.save(usuario)
         estudiante = Estudiante(id, data['nombre'], data['apellido'], data['tipoDocumento'],
-                                data['numeroDocumento'], data['numeroTelefono'], data['programa'], data['facultad'], data['correo'],None)
+                                data['numeroDocumento'], data['numeroTelefono']
+                                , data['facultad'], data['programa'], data['correo'],None)
         Estudiante.save(estudiante)
         status = 200
         response = {'message': "solicitud procesada"}
@@ -496,7 +497,6 @@ def listado(id_tutoria):
     return jsonify({"estudiante":listado})
     # if not logout:    
     #     return jsonify({"message":"error"})
-
 
 
 

@@ -2,8 +2,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from databases.conexion import getConecction
 from flask_login import UserMixin
 
-bd = getConecction()
-cursor = bd.cursor()
+
 
 
 class User(UserMixin):
@@ -22,6 +21,8 @@ class User(UserMixin):
 
     @classmethod
     def save(self, usuario):
+        bd = getConecction()
+        cursor = bd.cursor()
         sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{usuario.id_rol}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
         cursor.execute(sql)
         bd.commit()
@@ -39,6 +40,8 @@ class User(UserMixin):
         return generate_password_hash(password)
   
     def get_by_email(correo: str):
+        bd = getConecction()
+        cursor = bd.cursor()
         sql = f"SELECT * FROM usuarios WHERE correo = '{correo}'"
         cursor.execute(sql)
         user_data = cursor.fetchone()
@@ -52,6 +55,8 @@ class User(UserMixin):
         return str(self.id)
     
     def get(user_id):
+        bd = getConecction()
+        cursor = bd.cursor()
         sql = f"SELECT * FROM usuarios WHERE id_usuario = {user_id}"
         cursor.execute(sql)
         user_data = cursor.fetchone()

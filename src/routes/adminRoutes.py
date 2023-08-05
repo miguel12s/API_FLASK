@@ -461,3 +461,37 @@ def obtenerHorarioTerminado():
    data=modelo.getHorarioFinished()
 
    return jsonify({"data":data})
+@admin.route('/getEstudiantes',methods=['get'])
+
+def getEstudiantes():
+    estudiantes=modelo.getEstudiantes()
+    return jsonify({"data":estudiantes})
+
+@admin.route('/modificarEstadoUsuario',methods=['post'])
+
+def modificarEstadoUsuario():
+    body=request.json
+    modeloUpdate=ModelosUpdate(bd)
+    modeloUpdate.actualizarEstado(body)
+    return jsonify({"success":"el estado ha sido actualizado"})
+
+@admin.route('getEstudiante/<id_usuario>',methods=['get'])
+
+
+def getEstudiante(id_usuario):
+    estudiante=modelo.getEstudiante(id_usuario)
+    print(estudiante)
+    return jsonify({"data":estudiante})
+
+@admin.post('actualizarEstudiante/<id_estudiante>')
+
+
+def actualizarEstudiante(id_estudiante):
+   estudiante=request.json
+   modelo.actualizarUsuario
+   id_estado=modelo.getEstadoForEstado(estudiante['estado'])
+   modelo.actualizarUsuario(id_estudiante,id_estado,estudiante['correo'])
+   modelo.actualizarEstudiante(id_estudiante,estudiante) 
+
+
+   return jsonify({"success":"el estudiante ha sido actualizado"})

@@ -240,9 +240,11 @@ join sedes se on s.id_sede=se.id_sede where s.id_salon={id_salon} """
     
     
     def getTipo(self):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql="select * from tipos_documento"
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         tipo_documento=[]
         for i in data:
             tipo={
@@ -266,9 +268,12 @@ join sedes se on s.id_sede=se.id_sede where s.id_salon={id_salon} """
         self.bd.commit()   
     
     def getEstado(self):
+          
+        bd=getConecction()
+        cursor=bd.cursor()
         sql="select * from estados"
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         estados=[]
         for i in data:
             estado={
@@ -439,6 +444,7 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
         print(horarios)
         return horarios
     
+
     def obtenerIdsTabla(self,data):
        
         sql=f"""SELECT
@@ -541,3 +547,64 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
                 
                 horarios.append(horario)
             return horarios
+    
+    def getEstudiantes(self):
+        sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario FROM estudiantes es 
+join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)
+ """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        estudiantes=[]
+        for i in data:
+            estudiante={
+                "nombres":i[0],
+                "celular":i[1],
+                "correo":i[2],
+                "facultad":i[3],
+                "id_estado":i[4],
+                "id_usuario":i[5],
+            }
+            estudiantes.append(estudiante) 
+        return estudiantes
+    def getEstudiante(self,id_usuario):
+        sql=f"""SELECT es.nombres, 
+        es.apellidos,es.tipo_documento,es.numero_documento,es.programa,es.facultad,
+        es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario,e.estado FROM estudiantes es 
+join usuarios u  on es.id_usuario=u.id_usuario
+join estados e on e.id_estado=u.id_estado
+where es.id_usuario={id_usuario}
+
+  ORDER BY (es.nombres)
+ """
+        self.cursor.execute(sql)
+        data=self.cursor.fetchall()
+        
+        
+        estudiante={
+                "nombres":data[0][0],
+                "apellidos":data[0][1],
+                "tipo_documento":data[0][2],
+                "numero_documento":data[0][3],
+                "programa":data[0][4],
+                "facultad":data[0][5],
+                "celular":data[0][6],
+                "correo":data[0][7],
+                "facultad":data[0][8],
+                "id_estado":data[0][9],
+                "id_usuario":data[0][10],
+                "estado":data[0][11]
+            }
+        return estudiante
+    def getEstadoForEstado(self,estado):
+        sql=f"select id_estado from estados where estado='{estado}'"
+        self.cursor.execute(sql)
+        return self.cursor.fetchone()[0]
+
+    def actualizarUsuario(self,id_estudiante,id_estado,correo):
+        sql=f" update usuarios set id_estado={id_estado} , correo='{correo}' where id_usuario={id_estudiante}"
+        self.cursor.execute(sql)
+        self.bd.commit()
+    def actualizarEstudiante(self,id_estudiante,data):
+        sql=f"UPDATE `estudiantes` SET `nombres`='{data['nombres']}',`apellidos`='{data['apellidos']}',`tipo_documento`='{data['tipo_documento']}',`numero_documento`='{data['numero_documento']}',`celular`='{data['celular']}',`facultad`='{data['facultad']}',`programa`='{data['programa']}',`correo`='{data['correo']}' WHERE id_usuario={id_estudiante}"
+        self.cursor.execute(sql)
+        self.bd.commit()

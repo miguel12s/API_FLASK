@@ -32,8 +32,10 @@ class Estudiante:
     def save(self,estudiante):
         bd=getConecction()
         cursor=bd.cursor()
+        print(estudiante.programa)
         sql=f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo,foto) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo[0]}','{'ubsolo.png'}')" 
         cursor.execute(sql)
+        print(sql)
         bd.commit()
     def get(id_estudiante):
         bd=getConecction()
