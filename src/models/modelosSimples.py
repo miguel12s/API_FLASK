@@ -71,6 +71,15 @@ def existEmail(email:str):
     existe = cursor.fetchone()[0]
     return existe
 
+def existNumeroDocumento(numeroDocumento:str):
+    mybd = getConecction()
+    cursor = mybd.cursor()
+ 
+    sql=f'select count(*) from estudiantes u  where u.numero_documento="{numeroDocumento}" '
+    cursor.execute(sql)
+    existe = cursor.fetchone()[0]
+    return existe
+
 def getFacultades():
     mybd = getConecction()
     cursor = mybd.cursor()

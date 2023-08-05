@@ -2,7 +2,7 @@ import os
 from werkzeug.utils import secure_filename
 from flask import Flask, jsonify, request,send_from_directory
 from flask_cors import CORS
-from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail,getFacultades
+from models.modelosSimples import getPrograms, getTipoDocumento,getSedes,getMaterias,getSalon,getEstadoTutoria,existEmail,existNumeroDocumento,getFacultades
 from models.estudiante import Estudiante
 from models.user import User
 from databases.conexion import getConecction
@@ -134,15 +134,28 @@ def registro():
             response = {'message': 'no hay datos en la request'}
             status = 400
             return jsonify(response, status, data)
-        usuario = User(None,'1', '1', data['correo'], data['contraseña'])
-        id = User.save(usuario)
-        estudiante = Estudiante(id, data['nombre'], data['apellido'], data['tipoDocumento'],
-                                data['numeroDocumento'], data['numeroTelefono']
-                                , data['facultad'], data['programa'], data['correo'],None)
-        Estudiante.save(estudiante)
-        status = 200
-        response = {'message': "solicitud procesada"}
-        return jsonify(response)
+        
+        existemail=existEmail(data['correo'])
+        existeNumeroDocumento=existNumeroDocumento(data['numeroDocumento'])
+        
+        if(existemail!=1 and existeNumeroDocumento!=1):
+
+            usuario = User(None,'1', '1', data['correo'], data['contraseña'])
+            id=User.save(usuario)
+            
+            estudiante = Estudiante(id, data['nombre'], data['apellido'], data['tipoDocumento'],
+                                        data['numeroDocumento'], data['numeroTelefono']
+                                        , data['facultad'], data['programa'], data['correo'],None)
+            exist=Estudiante.save(estudiante)
+            print(exist)
+                    
+            status = 200
+            response = {'message': "estudiante agregado"}
+            return jsonify(response)
+        if(existeNumeroDocumento==1):
+            return jsonify({"errorIdentificacion":"el numero de documento se encuentra registrado en el programa"})
+        elif(existemail==1):
+            return jsonify({"error":"el correo se encuentra en el sistema"})
     except Exception as e:
         print(e)
         return jsonify({'message': "error"})

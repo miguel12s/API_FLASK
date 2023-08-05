@@ -23,11 +23,13 @@ class User(UserMixin):
     def save(self, usuario):
         bd = getConecction()
         cursor = bd.cursor()
-        sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{usuario.id_rol}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
-        cursor.execute(sql)
-        bd.commit()
-        id_usuario = cursor.lastrowid
-        print(id_usuario)
+        try:
+            sql = f"INSERT INTO usuarios (id_usuario, id_rol, id_estado, correo, contraseña) VALUES ('{None}', '{usuario.id_rol}', '{1}', '{usuario.correo}', '{usuario.contraseña}')"
+            cursor.execute(sql)
+            bd.commit()
+            id_usuario = cursor.lastrowid
+        except:
+            return None
         return id_usuario
 
     @classmethod
