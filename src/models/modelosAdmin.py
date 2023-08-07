@@ -611,7 +611,7 @@ where es.id_usuario={id_usuario}
         self.cursor.execute(sql)
         self.bd.commit()
     def getDocentess(self):
-        sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario FROM docentes es 
+        sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario,es.apellidos FROM docentes es 
 join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)"""
         self.cursor.execute(sql)
         data=self.cursor.fetchall()
@@ -626,6 +626,7 @@ join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)"""
                 "facultad":i[3],
                 "id_estado":i[4],
                 "id_usuario":i[5],
+                "apellidos":i[6]
                 
             }
             docentes.append(docente)

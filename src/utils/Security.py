@@ -9,7 +9,8 @@ class Security():
         payload={
             'iat':datetime.datetime.now(tz=cls.tz),
             'exp':datetime.datetime.now(tz=cls.tz)+datetime.timedelta(minutes=10),
-            'id_usuario':id_usuario
+            'id_usuario':id_usuario,
+            
 
         }
         return jwt.encode(payload,"secret_key",algorithm="HS256")
