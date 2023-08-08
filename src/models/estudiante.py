@@ -37,7 +37,8 @@ class Estudiante:
             sql=f"INSERT INTO estudiantes( id_usuario ,nombres, apellidos, tipo_documento, numero_documento, celular, facultad, programa, correo,foto) VALUES ( '{estudiante.id}','{estudiante.nombre}','{estudiante.apellido}','{estudiante.tipoDocumento}','{estudiante.numeroDocumento}','{estudiante.celular}','{estudiante.facultad}','{estudiante.programa}','{estudiante.correo[0]}','{'ubsolo.png'}')" 
             cursor.execute(sql)
             bd.commit()
-        except:
+        except Exception as e:
+            print(e)
             return None
     def get(id_estudiante):
         bd=getConecction()

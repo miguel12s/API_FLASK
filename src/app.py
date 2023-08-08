@@ -250,23 +250,33 @@ def cambiar_contraseña():
 def agregarDocente():
     
         data: Docente = request.json
-        if not data:
+        response={}
+        try:
+          if not data:
             response = {'message': 'no hay datos en la request'}
             status = 400
             return jsonify(response, status, data)
+          existemail=existEmail(data['correo'])
+          existeNumeroDocumento=existNumeroDocumento(data['numeroDocumento'])
+          if(existemail!=1 and existeNumeroDocumento!=1):
+                usuario = User(None,'2', '1', data['correo'], data['contraseña'])
+                print(usuario)
+                id = User.save(usuario)
+                foto="ubsolo.png"
+                docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
+                                        data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'],foto)
+                Docente.save(docente)
+          if(existeNumeroDocumento==1):
+            return jsonify({"errorIdentificacion":"el numero de documento se encuentra registrado en el programa"})
+          elif(existemail==1):
+            return jsonify({"error":"el correo se encuentra en el sistema"})  
+          status = 200
+          response = {'message': "docente agregado con exito"}
+          return jsonify(response)
         
-        usuario = User(None,'2', '1', data['correo'], data['contraseña'])
-        print(usuario)
-        id = User.save(usuario)
-        foto="https://acsilat.org/images/2020/05/06/teacher.png"
-        docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
-                                data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'],foto)
-        Docente.save(docente)
-        
-        status = 200
-        response = {'message': "solicitud procesada"}
-        return jsonify(response)
-    
+        except Exception as e:
+            print(e)
+            return jsonify({'message': "error"})
 @app.route('/agregarHorario',methods=['post'])
 
 def agregarHorario():
