@@ -283,7 +283,7 @@ def agregarHorario():
     horario=request.json
     print(horario)
     headers=request.headers
-    print(horario['facultad'])
+    
     payload=Security.verify_token(headers)
     
     id_facultad=Horario.buscarFacultad(horario['facultad'])
@@ -294,6 +294,7 @@ def agregarHorario():
     id_sede=Horario.agregarSede(horario['sede'])
     id_usuario=payload['id_usuario']
     horario=Horario(0,id_facultad,id_programa,id_materia,id_sede,id_salon,id_usuario,1,horario['capacidad'],horario['tema'],horario['fecha'],horario['horaInicio'],horario['horaFin'],None)
+    Horario.verificarHorario()
     Horario.agregarHorario(horario)
     return jsonify({"horario":"horario creado"})
     
@@ -522,6 +523,19 @@ def listado(id_tutoria):
     # if not logout:    
     #     return jsonify({"message":"error"})
 
+@app.route('/renew-token', methods=['POST'])
+def renew_token():
+    data = request.get_json()
+    token = data.get('token')  # Token a renovar
+    
+    if token:
+        new_token = Security.renew_token(token)
+        if new_token:
+            return jsonify({'new_token': new_token}), 200
+        else:
+            return jsonify({'message': 'Token renewal failed'}), 401
+    else:
+        return jsonify({'message': 'Token not provided'}), 400
 
 
 if __name__ == '__main__':

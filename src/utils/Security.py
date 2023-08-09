@@ -8,7 +8,7 @@ class Security():
     def generateToken(cls,id_usuario):
         payload={
             'iat':datetime.datetime.now(tz=cls.tz),
-            'exp':datetime.datetime.now(tz=cls.tz)+datetime.timedelta(minutes=10),
+            'exp':datetime.datetime.now(tz=cls.tz)+datetime.timedelta(hours=1),
             'id_usuario':id_usuario,
             
 
@@ -22,9 +22,18 @@ class Security():
          try:
             payload=jwt.decode(token,'secret_key',algorithms='HS256')
             return payload
-         except (jwt.ExpiredSignatureError,jwt.ExpiredSignatureError):
+         except (jwt.ExpiredSignatureError):
             return False
         return False
+    
+    @classmethod
+    def renew_token(cls, token):
+        try:
+            payload = jwt.decode(token, 'secret_key', algorithms='HS256')
+            new_token = cls.generate_token(payload['id_usuario'])
+            return new_token
+        except jwt.ExpiredSignatureError:
+            return None
 
 
             
