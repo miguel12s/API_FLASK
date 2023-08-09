@@ -174,6 +174,15 @@ WHERE capacidades.id_capacidad={id_capacidad}"""
                        "capacidad":i[14],
                        "id_estado_tutoria":i[15]
                        }
+    @classmethod
+
+    def verificarFecha(self,horaInicio,horaFin,fecha,id_usuario):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"""SELECT count(*) from horario_tutorias ht where ht.hora_inicial="{horaInicio}" and ht.hora_final="{horaFin}" and ht.fecha="{fecha}" and ht.id_usuario={id_usuario} """
+        cursor.execute(sql)
+        existe=cursor.fetchone()[0]
+        return existe
    
        
     

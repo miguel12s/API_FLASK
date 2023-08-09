@@ -281,22 +281,25 @@ def agregarDocente():
 
 def agregarHorario():
     horario=request.json
-    print(horario)
     headers=request.headers
-    
     payload=Security.verify_token(headers)
-    
-    id_facultad=Horario.buscarFacultad(horario['facultad'])
-    id_programa=Horario.buscarPrograma(horario['programa'])
-    id_materia=Horario.agregarMateria(horario['materia'])
-    id_capacidad=Horario.agregarCapacidad(horario['capacidad'])
-    id_salon=Horario.agregarSalon(horario['salon'],id_capacidad)
-    id_sede=Horario.agregarSede(horario['sede'])
     id_usuario=payload['id_usuario']
-    horario=Horario(0,id_facultad,id_programa,id_materia,id_sede,id_salon,id_usuario,1,horario['capacidad'],horario['tema'],horario['fecha'],horario['horaInicio'],horario['horaFin'],None)
-    Horario.verificarHorario()
-    Horario.agregarHorario(horario)
-    return jsonify({"horario":"horario creado"})
+
+    existeFecha=Horario.verificarFecha(horario['horaInicio'],horario['horaFin'],horario['fecha'],id_usuario)
+    print(existeFecha)
+    if(existeFecha==0):
+
+        id_facultad=Horario.buscarFacultad(horario['facultad'])
+        id_programa=Horario.buscarPrograma(horario['programa'])
+        id_materia=Horario.agregarMateria(horario['materia'])
+        id_capacidad=Horario.agregarCapacidad(horario['capacidad'])
+        id_salon=Horario.agregarSalon(horario['salon'],id_capacidad)
+        id_sede=Horario.agregarSede(horario['sede'])
+        horario=Horario(0,id_facultad,id_programa,id_materia,id_sede,id_salon,id_usuario,1,horario['capacidad'],horario['tema'],horario['fecha'],horario['horaInicio'],horario['horaFin'],None)
+        Horario.agregarHorario(horario) 
+        return jsonify({"horario":"horario creado"})
+    else:
+        return jsonify({"error":"ya existe un horario creado a esa misma hora y fecha"})
     
 @app.route('/horario')
 
