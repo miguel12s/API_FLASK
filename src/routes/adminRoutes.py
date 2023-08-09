@@ -14,7 +14,7 @@ modelo=ModelosAdmin(bd)
 def agregarFacultad():
     body=request.json
     modelo.agregarFacultad(body['facultad'])
-    return jsonify("la facultad ha sido agregada con exito")
+    return jsonify("La facultad ha sido agregada con exito")
 @admin.route('obtenerFacultades',methods=['get'])
 
 def obtenerFacultades():
@@ -29,8 +29,8 @@ def actualizarFacultad():
     try:
       modelo.actualizarFacultad(data)
     except:
-      return jsonify({"error":"el nombre de la tabla ya se encuentra registrado en el programa"})
-    return jsonify({"success":"la facultad ha sido actualizada"})
+      return jsonify({"error":"La facultad ya se encuentra registrada en el sistema"})
+    return jsonify({"success":"La facultad ha sido actualizada"})
 
 @admin.route('/getFacultadForId/<id_facultad>',methods=['get'])
 
@@ -47,8 +47,8 @@ def setFacultad():
     try:
         modelo.agregarFacultad(data['facultad'])
     except:
-        return jsonify({"error":"la facultad ya se encuentra registrada en el sistema"})
-    return jsonify({"data":" la facultad ha sido agregado con exito"})
+        return jsonify({"error":"La facultad ya se encuentra registrada en el sistema"})
+    return jsonify({"data":"La facultad ha sido agregada con exito"})
 
 
 
@@ -61,8 +61,8 @@ def agregarPrograma():
     try:
       modelo.agregarPrograma(body['programa'])
     except:
-        return jsonify({"error":"El programa que desea insertar se encuenta registrado en el programa"})
-    return jsonify("el programa ha sido agregada con exito")
+        return jsonify({"error":"El programa ya se encuentra registrado en el sistema"})
+    return jsonify("El programa ha sido agregado con exito")
 @admin.route('obtenerProgramas',methods=['get'])
 
 def obtenerProgramas():
@@ -80,8 +80,8 @@ def actualizarProgramas():
     try:
       modelo.actualizarPrograma(data)
     except:
-      return jsonify({"error":"el nombre de la tabla ya se encuentra registrado en el programa"})
-    return jsonify({"success":"El programa ha sido actualizada"})
+      return jsonify({"error":"El programa ya se encuentra registrado en el sistema"})
+    return jsonify({"success":"El programa ha sido actualizado"})
 
 @admin.route('/getProgramaForId/<id_programa>',methods=['get'])
 
@@ -97,7 +97,7 @@ def setPrograma():
     try:
       modelo.agregarPrograma(data['programa'])
     except:
-        return jsonify({"error":"El programa que desea insertar se encuenta registrado en el programa"})
+        return jsonify({"error":"El programa ya se encuentra registrado en el sistema"})
         
         
     return jsonify({"data":" El programa ha sido agregado con exito"})
@@ -117,8 +117,8 @@ def agregarMateria():
       modelo.agregarMateria(body['materia'])
 
     except:
-      return jsonify({"error":"el nombre de la tabla ya se encuentra registrado en la materia"})
-    return jsonify({"data":"la materia ha sido agregada con exito"})
+      return jsonify({"error":"La materia ya se encuentra registrada en el sistema"})
+    return jsonify({"data":"La materia ha sido agregada con exito"})
 @admin.route('obtenerMaterias',methods=['get'])
 
 def obtenerMaterias():
@@ -133,8 +133,8 @@ def actualizarMateria():
     try:
       modelo.actualizarMateria(data)
     except:
-      return jsonify({"error":"el nombre de la tabla ya se encuentra registrado en el programa"})
-    return jsonify({"success":"El programa ha sido actualizada"})
+      return jsonify({"error":"La materia ya se encuentra registrada en el sistema"})
+    return jsonify({"success":"La materia ha sido actualizada"})
 
 @admin.route('/getMateriaForId/<id_materia>',methods=['get'])
 
@@ -162,8 +162,8 @@ def setSede():
     try:
       modelo.agregarSede(body['sede'])
     except:
-        return jsonify({"error":"la sede ya existe en el programa"})
-    return jsonify({"data":"la sede ha sido agregada con exito"})
+        return jsonify({"error":"La sede ya se encuentra registrada en el sistema"})
+    return jsonify({"data":"La sede ha sido agregada con exito"})
 
 @admin.route('actualizarSede',methods=['post'])
 def actualizarSede():
@@ -171,8 +171,8 @@ def actualizarSede():
      try:
       modelo.actualizarSede(data)
      except:
-      return jsonify({"error":"el nombre de la sede ya se encuentra registrado en el programa"})
-     return jsonify({"success":"la sede ha sido actualizada"})
+      return jsonify({"error":"La sede ya se encuentra registrada en el sistema"})
+     return jsonify({"success":"La sede ha sido actualizada"})
 
 
 @admin.route('getSalones',methods=['get'])
@@ -200,8 +200,8 @@ def setSalon():
       modelo.agregarSalon(ids,salon['salon'])
     except Exception as e:
         print(e)
-        return jsonify({"error":"la sede ya existe en el programa"})
-    return jsonify({"data":"la sede ha sido agregada con exito"})
+        return jsonify({"error":"El salón ya se encuentra registrado en el sistema"})
+    return jsonify({"data":"El salón ha sido agregado con exito"})
 
 @admin.route('actualizarSalon',methods=['post'])
 
@@ -214,8 +214,8 @@ def actualizarSalon():
    except Exception as e:
       
       print(e)
-      return jsonify({"error":"el salon ya existe en el sistema"})
-   return jsonify({"success":"el salon ha sido actualizado"})
+      return jsonify({"error":"El salon ya se encuentra registrado en el sistema"})
+   return jsonify({"success":"El salon ha sido actualizado"})
 
 @admin.route('/getRoles')
 
@@ -237,8 +237,8 @@ def setRol():
    try:
       modelo.setRol(roles)
    except:
-        return jsonify({"error":"el rol ya existe en el programa"})
-   return jsonify({"data":"el rol ha sido agregada con exito"})
+        return jsonify({"error":"El rol ya se encuentra registrado en el sistema"})
+   return jsonify({"data":"El rol ha sido agregado con exito"})
 
 
 
@@ -250,8 +250,8 @@ def actualizarRol():
      try:
       modelo.actualizarRol(data)
      except:
-      return jsonify({"error":"el nombre del rol  ya se encuentra registrado en el programa"})
-     return jsonify({"success":"el rol ha sido actualizada"})
+      return jsonify({"error":"EL rol ya se encuentra registrado en el sistema"})
+     return jsonify({"success":"El rol ha sido actualizado"})
 
 
 
@@ -277,8 +277,8 @@ def setTipo():
    try:
       modelo.setTipo(tipos)
    except:
-        return jsonify({"error":"el tipo de documento ya existe en el programa"})
-   return jsonify({"data":"el tipo de documento ha sido agregada con exito"})
+        return jsonify({"error":"El tipo de documento ya se encuentra registrado en el sistema"})
+   return jsonify({"data":"El tipo de documento ha sido agregado con exito"})
 
 
 
@@ -290,8 +290,8 @@ def actualizarTipo():
      try:
       modelo.actualizarTipo(data)
      except:
-      return jsonify({"error":"el tipo de documento ya se encuentra registrado en el programa"})
-     return jsonify({"success":"el tipo de documento ha sido actualizada"})
+      return jsonify({"error":"El tipo de documento ya se encuentra registrado en el sistema"})
+     return jsonify({"success":"El tipo de documento ha sido actualizado"})
 
 
 
@@ -318,8 +318,8 @@ def setEstado():
    try:
       modelo.setEstado(estados)
    except:
-        return jsonify({"error":"el estado ya existe en el programa"})
-   return jsonify({"data":"el estado ha sido agregado con exito"})
+        return jsonify({"error":"El estado de usuario ya se encuentra registrado en el sistema"})
+   return jsonify({"data":"El estado ha sido agregado con exito"})
 
 
 
@@ -332,8 +332,8 @@ def actualizarEstado():
       modelo.actualizarEstado(data)
      except Exception as e:
       print(e)
-      return jsonify({"error":"el estado ya se encuentra registrado en el programa"})
-     return jsonify({"success":"el estado ha sido actualizada"})
+      return jsonify({"error":"El estado de usuario ya se encuentra registrado en el sistema"})
+     return jsonify({"success":"El estado de usuario ha sido actualizado"})
 
 
 
@@ -360,8 +360,8 @@ def setEstadoTutoria():
    try:
       modelo.setEstadoTutoria(estados)
    except:
-        return jsonify({"error":"el estado de la tutoria ya existe en el programa"})
-   return jsonify({"data":"el estado de la tutoria ha sido agregado con exito"})
+        return jsonify({"error":"El estado de la tutoria ya se encuentra registrado en el sistema"})
+   return jsonify({"data":"El estado de la tutoria ha sido agregado con exito"})
 
 
 
@@ -374,8 +374,8 @@ def actualizarEstadoTutoria():
       modelo.actualizarEstadoTutoria(data)
      except Exception as e:
       print(e)
-      return jsonify({"error":"el estado de la tutoria  ya se encuentra registrado en el programa"})
-     return jsonify({"success":"el estado  de la tutoria ha sido actualizada"})
+      return jsonify({"error":"El estado de la tutoria  ya se encuentra registrado en el sistema"})
+     return jsonify({"success":"El estado  de la tutoria ha sido actualizado"})
 
 
 
@@ -401,8 +401,8 @@ def setCapacidad():
    try:
       modelo.setCapacidad(estados)
    except:
-        return jsonify({"error":"el estado de la tutoria ya existe en el programa"})
-   return jsonify({"data":"el estado de la tutoria ha sido agregado con exito"})
+        return jsonify({"error":"La capacidad ya se encuentra registrada en el sistema"})
+   return jsonify({"data":"La capacidad ha sido agregada con exito"})
 
 
 
@@ -415,8 +415,8 @@ def actualizarCapacidad():
       modelo.actualizarCapacidad(data)
      except Exception as e:
       print(e)
-      return jsonify({"error":"el estado de la tutoria  ya se encuentra registrado en el programa"})
-     return jsonify({"success":"el estado  de la tutoria ha sido actualizada"})
+      return jsonify({"error":"La capacidad ya se encuentra registrada en el sistema"})
+     return jsonify({"success":"La capacidad ha sido actualizada"})
 
 @admin.route('/obtenerHorarioDocente',methods=['get'])
 
