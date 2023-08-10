@@ -8,7 +8,7 @@ class Security():
     def generateToken(cls,id_usuario):
         payload={
             'iat':datetime.datetime.now(tz=cls.tz),
-            'exp':datetime.datetime.now(tz=cls.tz)+datetime.timedelta(hours=1),
+            'exp':datetime.datetime.now(tz=cls.tz)+datetime.timedelta(minutes=20),
             'id_usuario':id_usuario,
             
 

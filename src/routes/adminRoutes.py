@@ -6,6 +6,7 @@ from models.modelosUpdate import ModelosUpdate
 admin=Blueprint("admin",__name__)
 bd=getConecction()
 modelo=ModelosAdmin(bd)
+from models.horario import Horario
 
 
 
@@ -449,10 +450,17 @@ def crearHorario():
    body=request.json
    
    print(body)
-   ids=modelo.obtenerIdsTabla(body)
-   print(ids)
-   modelo.crearHorario(body,ids)
-   return jsonify({"message":"el horario ha sido añadido con exito"})
+   id_usuario=body['docente'].split('-')[1]
+
+   existeFecha=Horario.verificarFecha(body['horaInicio'],body['horaFin'],body['fecha'],id_usuario)
+   print(existeFecha)
+   if(existeFecha==0):
+    ids=modelo.obtenerIdsTabla(body)
+    print(ids)
+    modelo.crearHorario(body,ids)
+    return jsonify({"message":"el horario ha sido añadido con exito"})
+   else:
+      return jsonify({"error":"ya existe un horario creado a esa misma hora y fecha"})
 
 
 @admin.route('/obtenerHorarioTerminado',methods=['get'])

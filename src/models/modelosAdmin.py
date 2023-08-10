@@ -1,5 +1,5 @@
 import mysql.connector
-
+from datetime import datetime
 from databases.conexion import getConecction
 
 
@@ -508,8 +508,9 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
         return docentes
     def crearHorario(self,horario,ids):
         id_usuario=horario['docente'].split('-')[1]
-        
-        sql=f"insert into horario_tutorias (id_tutoria, id_facultad, id_programa, id_materia, id_sede, id_salon, id_usuario, id_estado_tutoria, cupos, tema, fecha, hora_inicial, hora_final, fecha_generacion_tutoria) VALUES ('{0}','{ids['id_facultad']}','{ids['id_programa']}','{ids['id_materia']}','{ids['id_sede']}','{ids['id_salon']}','{id_usuario}','{1}','{horario['capacidad']}','{horario['tema']}','{horario['tema']}','{horario['horaInicio']}','{horario['horaFin']}','{horario['fecha']}')"
+        fecha=datetime.now()
+        print(fecha)
+        sql=f"insert into horario_tutorias (id_tutoria, id_facultad, id_programa, id_materia, id_sede, id_salon, id_usuario, id_estado_tutoria, cupos, tema, fecha, hora_inicial, hora_final) VALUES ('{0}','{ids['id_facultad']}','{ids['id_programa']}','{ids['id_materia']}','{ids['id_sede']}','{ids['id_salon']}','{id_usuario}','{1}','{horario['capacidad']}','{horario['tema']}','{horario['fecha']}','{horario['horaInicio']}','{horario['horaFin']}')"
         self.cursor.execute(sql)
         self.bd.commit()
     
@@ -519,7 +520,7 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
             bd=getConecction()
             cursor=bd.cursor()
             sql="""
-            select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario,h.fecha_generacion_tutoria from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on h.id_salon=capa.id_capacidad where et.id_estado_tutoria=2"""
+            select h.cupos,h.tema,h.fecha,h.hora_inicial,h.hora_final,h.id_tutoria,f.facultad,p.programa,m.materia,s.sede,et.id_estado_tutoria,doc.nombres,doc.apellidos,sal.salon,capa.capacidad,h.id_tutoria,doc.id_usuario,h.fecha_generacion_tutoria from horario_tutorias h join facultades f on h.id_facultad=f.id_facultad join programas p on h.id_programa=p.id_programa join materias m on h.id_materia=m.id_materia join sedes s on h.id_sede=s.id_sede join estados_tutorias et on h.id_estado_tutoria=et.id_estado_tutoria join docentes doc on h.id_usuario=doc.id_usuario join salones sal on h.id_salon=sal.id_salon join capacidades capa on sal.id_capacidad=capa.id_capacidad where et.id_estado_tutoria=2"""
             cursor.execute(sql)
             data=cursor.fetchall()
             horarios=[]
@@ -551,11 +552,13 @@ where c.capacidad='{salon['capacidad']}' and se.sede='{salon['sede']}'"""
             return horarios
     
     def getEstudiantes(self):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario FROM estudiantes es 
 join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)
  """
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         estudiantes=[]
         for i in data:
             estudiante={
@@ -611,10 +614,12 @@ where es.id_usuario={id_usuario}
         self.cursor.execute(sql)
         self.bd.commit()
     def getDocentess(self):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql="""SELECT es.nombres,es.celular,es.correo,es.facultad,u.id_estado,u.id_usuario,es.apellidos FROM docentes es 
 join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)"""
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         print(data)
         docentes=[]
         for i in data:
@@ -632,6 +637,8 @@ join usuarios u  on es.id_usuario=u.id_usuario  ORDER BY (es.nombres)"""
             docentes.append(docente)
         return docentes
     def getDocenteFull(self,id_usuario):
+        bd=getConecction()
+        cursor=bd.cursor()
         sql=f"""
 SELECT es.nombres, 
         es.apellidos,es.tipo_documento,es.numero_documento,es.facultad,
@@ -642,8 +649,8 @@ where es.id_usuario={id_usuario}
 
   ORDER BY (es.nombres)
 """
-        self.cursor.execute(sql)
-        data=self.cursor.fetchall()
+        cursor.execute(sql)
+        data=cursor.fetchall()
         print(data)
         return {
             "nombres":data[0][0],

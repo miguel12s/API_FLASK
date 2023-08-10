@@ -40,6 +40,7 @@ def allowed_file(filename):
 def upload():
     
     verify = request.headers
+    print(verify)
     payload = Security.verify_token(verify)
     print(payload)
     id_usuario = payload['id_usuario']
@@ -319,7 +320,6 @@ def obtenerCapacidad():
     data=request.json
     headers=request.headers
     print(data)
-    payload=Security.verify_token(headers)
     id_salon,id_capacidad,id_sede=Horario.obtenerSalon(data['salon'])
     print(id_salon,id_capacidad,id_sede)
     
