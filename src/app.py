@@ -15,6 +15,7 @@ from models.consultasHorario import consultasHorario
 from models.modelosUpdate import ModelosUpdate
 from models.TutoriasPendientes import TutoriasPendientes
 from models.forgot import Forgot
+from models.modelosAdmin import ModelosAdmin
 from utils.Security import Security
 from services.Mail import send_email
 from routes.adminRoutes import admin
@@ -540,6 +541,15 @@ def renew_token():
     else:
         return jsonify({'message': 'Token not provided'}), 400
 
+
+@app.route('/buscarPrograma/<facultad>')
+
+def buscarProgramas(facultad):
+    modelo=ModelosAdmin(bd)
+    id_facultad=modelo.obtenerIdFacultad(facultad)
+    programas=modelo.buscarProgramas(id_facultad)
+    print(programas)
+    return jsonify({"data":programas}),201
 
 if __name__ == '__main__':
     app.run(debug=True,)

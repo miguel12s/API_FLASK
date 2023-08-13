@@ -646,7 +646,6 @@ SELECT es.nombres,
 join usuarios u  on es.id_usuario=u.id_usuario
 join estados e on e.id_estado=u.id_estado
 where es.id_usuario={id_usuario}
-
   ORDER BY (es.nombres)
 """
         cursor.execute(sql)
@@ -670,3 +669,17 @@ UPDATE `docentes` SET `nombres`='{data['nombres']}',`apellidos`='{data['apellido
 """
         self.cursor.execute(sql)
         self.bd.commit()
+    def buscarProgramas(self,facultad):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"select programa from programas where id_facultad='{facultad}'"
+        print(sql)
+        cursor.execute(sql)        
+        return cursor.fetchall()
+    def obtenerIdFacultad(self,programa):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"SELECT id_facultad FROM facultades WHERE facultad='{programa}'"
+        cursor.execute(sql)
+        print(sql)
+        return cursor.fetchone()[0]
