@@ -79,7 +79,6 @@ class Horario:
         bd=getConecction()
         cursor=bd.cursor()
         fecha=datetime.now()
-        print('id_programa',horario.id_programa)
         sql=f"insert into horario_tutorias (id_tutoria, id_facultad, id_programa, id_materia, id_sede, id_salon, id_usuario, id_estado_tutoria, cupos, tema, fecha, hora_inicial, hora_final, fecha_generacion_tutoria) VALUES ('{0}','{horario.id_facultad}','{horario.id_programa}','{horario.id_materia}','{horario.id_sede}','{horario.id_salon}','{horario.id_usuario}','{horario.id_estado_tutoria}','{horario.cupos}','{horario.tema}','{horario.fecha}','{horario.hora_inicio}','{horario.hora_final}','{fecha}')" 
         cursor.execute(sql)
         bd.commit()
@@ -133,7 +132,8 @@ class Horario:
     def buscarFacultad(self,facultad):
         bd=getConecction()
         cursor=bd.cursor()
-        sql=f"select id_facultad from facultades where facultad='{facultad}' "
+        sql=f"select id_facultad from facultades where facultad='{facultad}'"
+        print(sql)
         cursor.execute(sql)
         id_programa=cursor.fetchone()[0]
         return id_programa
@@ -183,7 +183,21 @@ WHERE capacidades.id_capacidad={id_capacidad}"""
         cursor.execute(sql)
         existe=cursor.fetchone()[0]
         return existe
-   
+    @classmethod
+    def eliminarHorario(self,id_tutoria):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"delete from horario_tutorias where id_tutoria={id_tutoria}"
+        cursor.execute(sql)
+        bd.commit()
+    @classmethod
+    def eliminarListado(self,id_tutoria):
+        bd=getConecction()
+        cursor=bd.cursor()
+        sql=f"delete from lista_estudiantes where id_tutoria={id_tutoria}"
+        cursor.execute(sql)
+        bd.commit()
+        
        
     
 

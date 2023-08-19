@@ -44,7 +44,7 @@ class ModelosUpdate():
         self.bd.commit()
         
     def obtenerCupos(self , id_tutoria):
-        sql=f"select cupos from horario_tutorias where id_tutoria={id_tutoria}"
+        sql=f"select capacidad from capacidades where id_capacidad={id_tutoria}"
         self.cursor.execute(sql)
         cupos=self.cursor.fetchone()[0]
         return cupos

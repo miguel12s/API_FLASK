@@ -42,8 +42,6 @@ class consultasHorario():
     def obtenerIds(self, id_usuario):
         mybd = getConecction()
         cursor = mybd.cursor()
-
-
         sql = f"select id_facultad,id_programa,id_materia,id_sede,id_salon,id_estado_tutoria,id_tutoria from horario_tutorias where id_usuario='{id_usuario}' "
         cursor.execute(sql)
         ids = cursor.fetchall()

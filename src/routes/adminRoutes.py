@@ -3,10 +3,51 @@ from flask import request
 from models.modelosAdmin import ModelosAdmin
 from databases.conexion import getConecction
 from models.modelosUpdate import ModelosUpdate
+from models.docente import Docente
+from models.modelosSimples import existEmail, existNumeroDocumento
+from models.user import User
 admin=Blueprint("admin",__name__)
 bd=getConecction()
 modelo=ModelosAdmin(bd)
 from models.horario import Horario
+
+
+
+
+
+@admin.route('/agregar-docente',methods=['POST'])
+
+def agregarDocente():
+    
+        data: Docente = request.json
+        response={}
+        try:
+          if not data:
+            response = {'message': 'no hay datos en la request'}
+            status = 400
+            return jsonify(response, status, data)
+          existemail=existEmail(data['correo'])
+          existeNumeroDocumento=existNumeroDocumento(data['numeroDocumento'])
+          if(existemail!=1 and existeNumeroDocumento!=1):
+                usuario = User(None,'2', '1', data['correo'], data['contraseña'])
+                print(usuario)
+                id = User.save(usuario)
+                foto="ubsolo.png"
+                docente = Docente(id, data['nombre'], data['apellido'], data['tipoDocumento'],
+                                        data['numeroDocumento'], data['numeroTelefono'],  data['facultad'], data['correo'],foto)
+                Docente.save(docente)
+          if(existeNumeroDocumento==1):
+            return jsonify({"errorIdentificacion":"el numero de documento se encuentra registrado en el programa"})
+          elif(existemail==1):
+            return jsonify({"error":"el correo se encuentra en el sistema"})  
+          status = 200
+          response = {'message': "docente agregado con exito"}
+          return jsonify(response)
+        
+        except Exception as e:
+            print(e)
+            return jsonify({'message': "error"})
+
 
 
 
